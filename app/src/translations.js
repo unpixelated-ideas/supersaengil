@@ -143,6 +143,49 @@ export const translations = {
       }
     ],
     termsLink: "이용약관",
+    updatesLink: "업데이트 로그",
+    updatesTitle: "업데이트 로그",
+    updatesUpdated: "최종 업데이트: 2026년 8월 22일",
+    updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
+    updatesEntries: [
+      {
+        version: "v0.9",
+        date: "2026년 8월 22일",
+        dateIso: "2026-08-22",
+        items: [
+          "업데이트 로그를 추가했습니다.",
+          "모바일과 태블릿에서 더 편하게 사용할 수 있도록 화면을 최적화했습니다."
+        ]
+      },
+      {
+        version: "v0.8",
+        date: "2026년 8월 18일",
+        dateIso: "2026-08-18",
+        items: [
+          "개인정보 처리방침을 추가했습니다.",
+          "이용약관을 추가했습니다."
+        ]
+      },
+      {
+        version: "v0.7",
+        date: "2026년 8월 5일",
+        dateIso: "2026-08-05",
+        items: [
+          "음력 윤달 계산 지원을 개선했습니다.",
+          "사용자 인터페이스를 전반적으로 개편했습니다."
+        ]
+      },
+      {
+        version: "v0.6",
+        date: "2026년 7월 31일",
+        dateIso: "2026-07-31",
+        items: [
+          "슈퍼생일의 초기 빌드를 만들었습니다.",
+          "한국어와 영어 버전을 모두 채웠습니다.",
+          "사용자가 라이트 모드와 다크 모드를 전환할 수 있는 화면 설정을 추가했습니다."
+        ]
+      }
+    ],
     termsTitle: "이용약관",
     termsUpdated: "최종 업데이트: 2026년 8월 18일",
     backToHome: "슈퍼생일로 돌아가기",
@@ -369,6 +412,49 @@ export const translations = {
       }
     ],
     termsLink: "Terms of Use",
+    updatesLink: "Update Log",
+    updatesTitle: "Update Log",
+    updatesUpdated: "Last updated: August 22, 2026",
+    updatesIntro: "A running record of major Super Saengil changes and improvements.",
+    updatesEntries: [
+      {
+        version: "v0.9",
+        date: "August 22, 2026",
+        dateIso: "2026-08-22",
+        items: [
+          "Added the Update Log.",
+          "Optimized the experience for mobile and tablet users."
+        ]
+      },
+      {
+        version: "v0.8",
+        date: "August 18, 2026",
+        dateIso: "2026-08-18",
+        items: [
+          "Added the Privacy Policy.",
+          "Added the Terms of Use."
+        ]
+      },
+      {
+        version: "v0.7",
+        date: "August 5, 2026",
+        dateIso: "2026-08-05",
+        items: [
+          "Improved support for lunar leap months.",
+          "Overhauled the user interface."
+        ]
+      },
+      {
+        version: "v0.6",
+        date: "July 31, 2026",
+        dateIso: "2026-07-31",
+        items: [
+          "Created the initial Super Saengil build.",
+          "Populated both English and Korean versions.",
+          "Added an appearance picker so users can switch between light and dark modes."
+        ]
+      }
+    ],
     termsTitle: "Terms of Use",
     termsUpdated: "Last updated: August 18, 2026",
     backToHome: "Back to Super Saengil",

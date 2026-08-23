@@ -72,6 +72,20 @@ describe("Super Saengil interface", () => {
     expect(englishLink.textContent).toBe("Terms of Use");
   });
 
+  it("shows a localized Update Log link in the homepage footer", async () => {
+    await loadApp();
+    const link = [...document.querySelectorAll(".site-footer a")].find((footerLink) => footerLink.textContent.includes("업데이트"));
+
+    expect(link).toBeTruthy();
+    expect(link.textContent).toBe("업데이트 로그");
+    expect(link.getAttribute("href")).toBe("updates/index.html");
+
+    document.querySelector('[data-lang="en"]').click();
+    const englishLink = [...document.querySelectorAll(".site-footer a")].find((footerLink) => footerLink.textContent.includes("Update"));
+    expect(englishLink).toBeTruthy();
+    expect(englishLink.textContent).toBe("Update Log");
+  });
+
   it("renders the Terms page directly and switches languages there", async () => {
     installDom("http://localhost/terms/");
     await loadApp();
@@ -92,6 +106,27 @@ describe("Super Saengil interface", () => {
     expect(document.querySelector(".back-link").textContent).toContain("Back to Super Saengil");
     expect(document.querySelector('.legal-body a[href="../privacy/index.html"]').textContent).toBe("Privacy Policy");
     expect(document.title).toBe("Terms of Use · 슈퍼생일");
+  });
+
+  it("renders the Update Log page directly and switches languages there", async () => {
+    installDom("http://localhost/updates/");
+    await loadApp();
+
+    expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 8월 22일");
+    expect(document.body.textContent).toContain("v0.9");
+    expect(document.body.textContent).toContain("모바일과 태블릿에서 더 편하게 사용할 수 있도록 화면을 최적화했습니다.");
+    expect(document.body.textContent).not.toContain("Update Log");
+    expect(document.querySelector(".back-link").getAttribute("href")).toBe("../index.html");
+    expect(document.querySelector(".brand-image").getAttribute("src")).toBe("../logo.png");
+    expect(document.title).toBe("업데이트 로그 · 슈퍼생일");
+
+    document.querySelector('[data-lang="en"]').click();
+    expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
+    expect(document.body.textContent).toContain("Last updated: August 22, 2026");
+    expect(document.body.textContent).toContain("Optimized the experience for mobile and tablet users.");
+    expect(document.body.textContent).not.toContain("업데이트 로그");
+    expect(document.title).toBe("Update Log · 슈퍼생일");
   });
 
   it("switches theme and persists the choice", async () => {

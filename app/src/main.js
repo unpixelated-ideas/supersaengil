@@ -50,7 +50,7 @@ function render() {
   document.documentElement.lang = state.lang;
   const isReverse = state.reverseUnlocked && state.searchMode === "reverse";
   const legalPage = currentLegalPage();
-  const legalTitle = legalPage === "privacy" ? t("privacyTitle") : t("termsTitle");
+  const legalTitle = legalPage === "privacy" ? t("privacyTitle") : legalPage === "terms" ? t("termsTitle") : t("updatesTitle");
   document.title = legalPage ? `${legalTitle} · ${translations.ko.appName}` : `${translations.ko.appName} · ${translations.ko.subtitle}`;
   app.innerHTML = `
     <div class="page">
@@ -302,6 +302,8 @@ function passwordModalTemplate() {
 }
 
 function legalPageTemplate(page) {
+  if (page === "updates") return updateLogTemplate();
+
   const pageTitle = page === "privacy" ? t("privacyTitle") : t("termsTitle");
   const pageUpdated = page === "privacy" ? t("privacyUpdated") : t("termsUpdated");
   const pageIntro = page === "privacy" ? t("privacyIntro") : t("termsIntro");
@@ -329,6 +331,37 @@ function legalPageTemplate(page) {
   `;
 }
 
+function updateLogTemplate() {
+  return `
+    <main>
+      <article class="legal-card update-log-card" aria-labelledby="legalTitle">
+        <a class="back-link" href="${homeHref()}">${icon("calendar")}<span>${t("backToHome")}</span></a>
+        <header class="legal-header">
+          <h1 id="legalTitle">${t("updatesTitle")}</h1>
+          <p>${t("updatesUpdated")}</p>
+        </header>
+        <div class="legal-body update-log-body">
+          <p>${t("updatesIntro")}</p>
+          <div class="updates-list">
+            ${t("updatesEntries").map((entry, index) => `
+              <section class="update-entry" aria-labelledby="updateEntry${index + 1}">
+                <header>
+                  <h2 id="updateEntry${index + 1}">${entry.version}</h2>
+                  <time datetime="${entry.dateIso}">${entry.date}</time>
+                </header>
+                <ul>
+                  ${entry.items.map((item) => `<li>${item}</li>`).join("")}
+                </ul>
+              </section>
+            `).join("")}
+          </div>
+        </div>
+      </article>
+    </main>
+    ${siteFooterTemplate()}
+  `;
+}
+
 function legalParagraphTemplate(page, paragraph) {
   if (page === "terms" && paragraph.includes("Privacy Policy")) {
     return `<p>${paragraph.replace("Privacy Policy", `<a href="${privacyHref()}">Privacy Policy</a>`)}</p>`;
@@ -344,6 +377,7 @@ function siteFooterTemplate() {
     <footer class="site-footer">
       <a href="${privacyHref()}">${t("privacyLink")}</a>
       <a href="${termsHref()}">${t("termsLink")}</a>
+      <a href="${updatesHref()}">${t("updatesLink")}</a>
     </footer>
   `;
 }
@@ -810,6 +844,7 @@ function resetInternalSearch() {
 function currentLegalPage() {
   if (/\/privacy\/?(index\.html)?$/.test(location.pathname)) return "privacy";
   if (/\/terms\/?(index\.html)?$/.test(location.pathname)) return "terms";
+  if (/\/updates\/?(index\.html)?$/.test(location.pathname)) return "updates";
   return "";
 }
 
@@ -823,6 +858,10 @@ function privacyHref() {
 
 function termsHref() {
   return currentLegalPage() ? "../terms/index.html" : "terms/index.html";
+}
+
+function updatesHref() {
+  return currentLegalPage() ? "../updates/index.html" : "updates/index.html";
 }
 
 function homeHref() {
