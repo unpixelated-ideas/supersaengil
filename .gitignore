@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+dist/
+.DS_Store
+
+# Local env/config
+.env
+.env.*
+
+# Test/build caches
+coverage/
+.vite/
