@@ -21,6 +21,7 @@ function installDom(url = "http://localhost/") {
     }))
   });
   window.scrollBy = vi.fn();
+  window.HTMLElement.prototype.scrollIntoView = vi.fn();
 }
 
 async function loadApp() {
@@ -211,6 +212,19 @@ describe("Super Saengil interface", () => {
     expect(document.querySelector("#expandButton").textContent).toContain("접기");
     document.querySelector("#expandButton").click();
     expect(document.querySelector("#expandButton").textContent).toContain("더보기");
+  });
+
+  it("moves focus down to the search results after submit", async () => {
+    await loadApp();
+    document.querySelector("#year").value = "1993";
+    document.querySelector("#month").value = "3";
+    document.querySelector("#day").value = "27";
+    document.querySelector("#birthdayForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+
+    const results = document.querySelector("#searchResults");
+    expect(document.activeElement).toBe(results);
+    expect(results.getAttribute("tabindex")).toBe("-1");
+    expect(window.HTMLElement.prototype.scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
   });
 
   it("keeps birthday fields focused while typing", async () => {

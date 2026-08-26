@@ -153,7 +153,8 @@ export const translations = {
         date: "2026년 8월 26일",
         dateIso: "2026-08-26",
         items: [
-          "모바일 웹 화면을 더 편하게 사용할 수 있도록 추가 수정 사항을 반영했습니다."
+          "모바일 웹 화면을 더 편하게 사용할 수 있도록 추가 수정 사항을 반영했습니다.",
+          "검색 후 사용자가 검색 결과로 바로 이동하도록 개선했습니다."
         ]
       },
       {
@@ -430,7 +431,8 @@ export const translations = {
         date: "August 26, 2026",
         dateIso: "2026-08-26",
         items: [
-          "Made additional fixes to improve the mobile web view."
+          "Made additional fixes to improve the mobile web view.",
+          "After searching, users are now brought directly to the search results."
         ]
       },
       {

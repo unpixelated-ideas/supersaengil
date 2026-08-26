@@ -36,9 +36,8 @@ export function formatLunar(date, lang, includePrefix = true) {
     const value = `${date.year}년 ${date.month}월 ${date.day}일, ${kind}`;
     return includePrefix ? `음력 ${value}` : value;
   }
-  const kind = date.isLeapMonth ? "leap month" : "regular month";
-  const value = `Lunar ${enMonths[date.month - 1]} ${date.day}, ${date.year}, ${kind}`;
-  return includePrefix ? `Lunar: ${value}` : value;
+  const value = `Lunar ${enMonths[date.month - 1]} ${date.day}, ${date.year}`;
+  return date.isLeapMonth ? `${value}, leap month` : value;
 }
 
 export function formatYear(year, lang) {

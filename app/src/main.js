@@ -395,7 +395,7 @@ function resultsTemplate() {
   const { result } = state;
   const sourceNote = result.lunarBirthday.isLeapMonth ? t("recurrenceNoteLeap") : t("recurrenceNoteRegular");
   return `
-    <section class="summary-card" aria-labelledby="matchingTitle">
+    <section id="searchResults" class="summary-card" aria-labelledby="matchingTitle" tabindex="-1">
       <div class="section-heading">
         <span class="mini-icon">${icon("calendar")}</span>
         <div>
@@ -437,7 +437,7 @@ function reverseResultsTemplate() {
   const { reverseResult } = state;
   const missingCount = reverseResult.rows.filter((row) => row.missingReason).length;
   return `
-    <section class="summary-card reverse-results" aria-labelledby="reverseMatchingTitle">
+    <section id="searchResults" class="summary-card reverse-results" aria-labelledby="reverseMatchingTitle" tabindex="-1">
       <div class="section-heading">
         <span class="mini-icon">${icon("calendar")}</span>
         <div>
@@ -766,6 +766,7 @@ function submit() {
     state.result = null;
   }
   render();
+  focusSearchResults();
 }
 
 function submitReverse() {
@@ -790,6 +791,27 @@ function submitReverse() {
     state.reverseResult = null;
   }
   render();
+  focusSearchResults();
+}
+
+function focusSearchResults() {
+  const focusAndScroll = () => {
+    const results = document.querySelector("#searchResults");
+    if (!results) return;
+    try {
+      results.focus({ preventScroll: true });
+    } catch (_error) {
+      results.focus();
+    }
+    results.scrollIntoView?.({ behavior: "smooth", block: "start" });
+  };
+
+  focusAndScroll();
+  if (window.requestAnimationFrame) {
+    window.requestAnimationFrame(focusAndScroll);
+  } else {
+    window.setTimeout(focusAndScroll, 0);
+  }
 }
 
 function validateInput(year, month, day, isLeapMonth) {
@@ -964,6 +986,7 @@ function applyTheme() {
   const resolved = state.theme === "system" ? (media.matches ? "dark" : "light") : state.theme;
   document.documentElement.dataset.theme = resolved;
   document.documentElement.dataset.themeMode = state.theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolved === "dark" ? "#201b1d" : "#fff7ec");
 }
 
 function brandIcon() {
