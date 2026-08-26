@@ -75,6 +75,10 @@ function render() {
               ${languageButton("ko", "한국어")}
               ${languageButton("en", "English")}
             </div>
+            <select class="setting-select mobile-setting-select" data-lang-select aria-label="${t("languageLabel")}">
+              <option value="ko" ${state.lang === "ko" ? "selected" : ""}>한국어</option>
+              <option value="en" ${state.lang === "en" ? "selected" : ""}>English</option>
+            </select>
           </div>
           <div class="control-stack">
             <span>${t("appearanceLabel")}</span>
@@ -84,6 +88,11 @@ function render() {
               ${themeButton("light", "sun", t("light"))}
               ${themeButton("dark", "moon", t("dark"))}
             </div>
+            <select class="setting-select mobile-setting-select" data-appearance-select aria-label="${t("appearanceLabel")}">
+              <option value="system" ${state.theme === "system" ? "selected" : ""}>${t("system")}</option>
+              <option value="light" ${state.theme === "light" ? "selected" : ""}>${t("light")}</option>
+              <option value="dark" ${state.theme === "dark" ? "selected" : ""}>${t("dark")}</option>
+            </select>
           </div>
         </div>
       </header>
@@ -347,7 +356,7 @@ function updateLogTemplate() {
               <section class="update-entry" aria-labelledby="updateEntry${index + 1}">
                 <header>
                   <h2 id="updateEntry${index + 1}">${entry.version}</h2>
-                  <time datetime="${entry.dateIso}">${entry.date}</time>
+                  ${entry.dateIso ? `<time datetime="${entry.dateIso}">${entry.date}</time>` : `<span class="update-status">${entry.date}</span>`}
                 </header>
                 <ul>
                   ${entry.items.map((item) => `<li>${item}</li>`).join("")}
@@ -599,6 +608,19 @@ function bindEvents() {
       applyTheme();
       render();
     });
+  });
+
+  document.querySelector("[data-lang-select]")?.addEventListener("change", (event) => {
+    state.lang = event.currentTarget.value;
+    localStorage.setItem(storageKeys.lang, state.lang);
+    render();
+  });
+
+  document.querySelector("[data-appearance-select]")?.addEventListener("change", (event) => {
+    state.theme = event.currentTarget.value;
+    localStorage.setItem(storageKeys.theme, state.theme);
+    applyTheme();
+    render();
   });
 
   document.querySelectorAll("[data-mode]").forEach((button) => {

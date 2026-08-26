@@ -2,7 +2,7 @@ export const translations = {
   ko: {
     appName: "슈퍼생일",
     subtitle: "Super Saengil",
-    languageLabel: "언어",
+    languageLabel: "언어 · Language",
     appearanceLabel: "화면",
     system: "시스템",
     light: "라이트",
@@ -145,9 +145,17 @@ export const translations = {
     termsLink: "이용약관",
     updatesLink: "업데이트 로그",
     updatesTitle: "업데이트 로그",
-    updatesUpdated: "최종 업데이트: 2026년 8월 22일",
+    updatesUpdated: "최종 업데이트: 2026년 8월 26일",
     updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
     updatesEntries: [
+      {
+        version: "v0.9.1",
+        date: "2026년 8월 26일",
+        dateIso: "2026-08-26",
+        items: [
+          "모바일 웹 화면을 더 편하게 사용할 수 있도록 추가 수정 사항을 반영했습니다."
+        ]
+      },
       {
         version: "v0.9",
         date: "2026년 8월 22일",
@@ -271,7 +279,7 @@ export const translations = {
   en: {
     appName: "Super Saengil",
     subtitle: "슈퍼생일",
-    languageLabel: "Language",
+    languageLabel: "Language · 언어",
     appearanceLabel: "Appearance",
     system: "System",
     light: "Light",
@@ -414,9 +422,17 @@ export const translations = {
     termsLink: "Terms of Use",
     updatesLink: "Update Log",
     updatesTitle: "Update Log",
-    updatesUpdated: "Last updated: August 22, 2026",
+    updatesUpdated: "Last updated: August 26, 2026",
     updatesIntro: "A running record of major Super Saengil changes and improvements.",
     updatesEntries: [
+      {
+        version: "v0.9.1",
+        date: "August 26, 2026",
+        dateIso: "2026-08-26",
+        items: [
+          "Made additional fixes to improve the mobile web view."
+        ]
+      },
       {
         version: "v0.9",
         date: "August 22, 2026",

@@ -113,7 +113,9 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 8월 22일");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 8월 26일");
+    expect(document.body.textContent).toContain("v0.9.1");
+    expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
     expect(document.body.textContent).toContain("모바일과 태블릿에서 더 편하게 사용할 수 있도록 화면을 최적화했습니다.");
     expect(document.body.textContent).not.toContain("Update Log");
@@ -123,7 +125,9 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: August 22, 2026");
+    expect(document.body.textContent).toContain("Last updated: August 26, 2026");
+    expect(document.body.textContent).toContain("v0.9.1");
+    expect(document.body.textContent).toContain("August 26, 2026");
     expect(document.body.textContent).toContain("Optimized the experience for mobile and tablet users.");
     expect(document.body.textContent).not.toContain("업데이트 로그");
     expect(document.title).toBe("Update Log · 슈퍼생일");
@@ -269,7 +273,7 @@ describe("Super Saengil interface", () => {
     expect(document.body.textContent).toContain("2017-06-24");
     expect(document.body.textContent).toContain("음력 생년월일");
     expect(document.body.textContent).toContain("2017년 5월 1일, 윤달");
-    expect(document.body.textContent).not.toContain("해당 음력 구성이 없는 해");
+    expect(document.body.textContent).toContain("해당 음력 구성이 없는 해: 1");
   });
 
   it("lets reverse search use a lunar target date", async () => {
