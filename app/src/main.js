@@ -986,7 +986,8 @@ function applyTheme() {
   const resolved = state.theme === "system" ? (media.matches ? "dark" : "light") : state.theme;
   document.documentElement.dataset.theme = resolved;
   document.documentElement.dataset.themeMode = state.theme;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolved === "dark" ? "#201b1d" : "#fff7ec");
+  const themeColor = getComputedStyle(document.documentElement).getPropertyValue("--theme-color").trim();
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", themeColor || (resolved === "dark" ? "#0d1322" : "#fffaf1"));
 }
 
 function brandIcon() {
