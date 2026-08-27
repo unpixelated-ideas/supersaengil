@@ -53,6 +53,7 @@ function render() {
   const legalTitle = legalPage === "privacy" ? t("privacyTitle") : legalPage === "terms" ? t("termsTitle") : t("updatesTitle");
   document.title = legalPage ? `${legalTitle} · ${translations.ko.appName}` : `${translations.ko.appName} · ${translations.ko.subtitle}`;
   app.innerHTML = `
+    <div class="app-background" aria-hidden="true"></div>
     <div class="page">
       <div class="decor" aria-hidden="true">
         <span class="sparkle sparkle-a"></span>
