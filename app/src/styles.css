@@ -10,13 +10,13 @@
   --primary-strong: #d97706;
   --primary-soft: #fff3d6;
   --primary-faint: rgba(245, 158, 11, 0.14);
-  --canvas-top: #fffaf1;
-  --theme-color: #fffaf1;
+  --canvas-top: #ffffff;
+  --theme-color: #ffffff;
   --canvas-background:
-    linear-gradient(180deg, var(--canvas-top) 0, var(--canvas-top) 7rem, rgba(255, 250, 241, 0) 12rem),
-    radial-gradient(circle at 0 10rem, rgba(245, 158, 11, 0.16), transparent 30rem),
-    radial-gradient(circle at 86% 14rem, rgba(255, 248, 232, 0.92), transparent 34rem),
-    linear-gradient(180deg, var(--canvas-top) 0, var(--canvas-top) 7rem, #fff4df 16rem, var(--bg) 34rem, var(--bg) 100%);
+    linear-gradient(180deg, var(--canvas-top) 0, var(--canvas-top) 15rem, rgba(255, 255, 255, 0) 21rem),
+    radial-gradient(circle at 0 20rem, rgba(245, 158, 11, 0.16), transparent 30rem),
+    radial-gradient(circle at 86% 24rem, rgba(255, 248, 232, 0.92), transparent 34rem),
+    linear-gradient(180deg, var(--canvas-top) 0, var(--canvas-top) 15rem, #fff4df 24rem, var(--bg) 38rem, var(--bg) 100%);
   --shadow: 0 20px 50px rgba(120, 76, 21, 0.1);
   --shadow-warm: 0 16px 32px rgba(217, 119, 6, 0.25);
   --focus: #fbbf24;
@@ -35,13 +35,13 @@
   --primary-strong: #f59e0b;
   --primary-soft: #332611;
   --primary-faint: rgba(251, 191, 36, 0.12);
-  --canvas-top: #0d1322;
-  --theme-color: #0d1322;
+  --canvas-top: #071020;
+  --theme-color: #071020;
   --canvas-background:
-    linear-gradient(180deg, var(--canvas-top) 0, var(--canvas-top) 7rem, rgba(13, 19, 34, 0) 12rem),
-    radial-gradient(circle at 0 10rem, rgba(245, 158, 11, 0.12), transparent 28rem),
-    radial-gradient(circle at 85% 14rem, rgba(54, 40, 21, 0.32), transparent 34rem),
-    linear-gradient(180deg, var(--canvas-top) 0, var(--canvas-top) 7rem, #1d1b20 16rem, #151826 32rem, var(--bg) 100%);
+    linear-gradient(180deg, var(--canvas-top) 0, var(--canvas-top) 15rem, rgba(7, 16, 32, 0) 21rem),
+    radial-gradient(circle at 0 20rem, rgba(245, 158, 11, 0.12), transparent 28rem),
+    radial-gradient(circle at 85% 24rem, rgba(54, 40, 21, 0.32), transparent 34rem),
+    linear-gradient(180deg, var(--canvas-top) 0, var(--canvas-top) 15rem, #1d1b20 24rem, #151826 36rem, var(--bg) 100%);
   --shadow: 0 20px 50px rgba(0, 0, 0, 0.34);
   --shadow-warm: 0 16px 32px rgba(245, 158, 11, 0.16);
   --focus: #f59e0b;
@@ -75,14 +75,14 @@ body {
 }
 
 .app-background {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   min-width: 320px;
+  min-height: 100%;
   pointer-events: none;
   background: var(--canvas-background);
   background-color: var(--canvas-top);
-  transform: translateZ(0);
 }
 
 button, input { font: inherit; }

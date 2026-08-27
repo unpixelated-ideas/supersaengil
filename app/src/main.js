@@ -988,7 +988,7 @@ function applyTheme() {
   document.documentElement.dataset.theme = resolved;
   document.documentElement.dataset.themeMode = state.theme;
   const themeColor = getComputedStyle(document.documentElement).getPropertyValue("--theme-color").trim();
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", themeColor || (resolved === "dark" ? "#0d1322" : "#fffaf1"));
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", themeColor || (resolved === "dark" ? "#071020" : "#ffffff"));
 }
 
 function brandIcon() {
