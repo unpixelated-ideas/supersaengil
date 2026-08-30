@@ -198,11 +198,11 @@ svg { width: 1.1rem; height: 1.1rem; }
   object-position: center;
 }
 
-.brand strong {
+.brand-title {
   display: block;
   color: var(--text);
   font-size: clamp(2.2rem, 5vw, 3.1rem);
-  font-weight: 950;
+  font-weight: 650;
   line-height: 1.02;
 }
 
@@ -216,7 +216,7 @@ svg { width: 1.1rem; height: 1.1rem; }
 
 .header-controls {
   display: flex;
-  align-items: end;
+  align-items: flex-start;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 18px;
@@ -228,6 +228,36 @@ svg { width: 1.1rem; height: 1.1rem; }
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 800;
+}
+
+.appearance-stack {
+  justify-items: stretch;
+}
+
+.reset-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  gap: 8px;
+  margin-top: 25px;
+  min-height: 50px;
+  padding: 0 16px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(31, 41, 55, 0.07);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.96rem;
+  font-weight: 850;
+}
+
+.reset-button:hover,
+.reset-button:focus-visible {
+  color: var(--primary-strong);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
 }
 
 input {
@@ -335,6 +365,45 @@ input::placeholder { color: #8a94a6; }
 
 .mobile-setting-select {
   display: none;
+}
+
+.birthday-term-control {
+  display: inline-flex;
+  justify-content: flex-end;
+  justify-self: end;
+  align-self: end;
+  width: 100%;
+  gap: 6px;
+  margin: 0 18px 0 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.birthday-term-control label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  min-width: 0;
+  padding: 0 0 0 10px;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.birthday-term-control input {
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--primary);
+}
+
+.birthday-term-control label:has(input:checked) {
+  color: var(--primary-strong);
 }
 
 .input-card,
@@ -534,7 +603,8 @@ h1 {
 
 .primary-button,
 .expand-button,
-.copy-button {
+.copy-button,
+.download-button {
   border: 0;
   cursor: pointer;
   font-weight: 950;
@@ -574,6 +644,26 @@ h1 {
 .reverse-results .copy-button {
   margin-top: 16px;
   margin-bottom: 0;
+}
+
+.download-button {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 10px;
+}
+
+.download-button:hover,
+.download-button:focus-visible {
+  color: white;
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
 .error {
@@ -805,10 +895,23 @@ h1 {
   font-weight: 850;
 }
 
+.history-body a {
+  font-weight: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
 .legal-body a:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 3px;
   border-radius: 6px;
+}
+
+.legal-note {
+  padding: 12px 14px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
 }
 
 .legal-section {
@@ -907,6 +1010,17 @@ h1 {
   align-items: center;
   gap: 12px;
   margin-bottom: 18px;
+}
+
+.section-heading-with-action {
+  justify-content: space-between;
+}
+
+.heading-copy {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
 }
 
 .mini-icon {
@@ -1102,6 +1216,194 @@ tr.matched td {
   font-weight: 950;
 }
 
+.download-dialog {
+  width: min(390px, 100%);
+  padding: 30px 28px 28px;
+  text-align: left;
+}
+
+.download-dialog h2 {
+  margin: 0 34px 12px 0;
+  text-align: center;
+}
+
+.dialog-help {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.download-dialog .field {
+  margin-bottom: 12px;
+}
+
+.birthday-term-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 34px;
+  margin: 2px 0 14px;
+  padding: 0;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.birthday-term-choice label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.birthday-term-choice input {
+  width: 17px;
+  height: 17px;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--primary);
+}
+
+.birthday-term-choice label:has(input:checked) {
+  color: var(--primary-strong);
+}
+
+.download-range {
+  display: grid;
+  gap: 18px;
+  margin: 8px 0 18px;
+  padding: 16px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.download-range-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.download-range-copy span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.download-range-copy strong {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 950;
+}
+
+.download-range-copy > div:first-child {
+  grid-column: 1;
+}
+
+.download-range-copy > div:last-of-type {
+  grid-column: 3;
+  justify-self: end;
+  text-align: right;
+}
+
+.download-count {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  padding: 4px 8px;
+  color: var(--primary-strong);
+  background: var(--primary-faint);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.dual-range {
+  position: relative;
+  height: 30px;
+}
+
+.dual-range-track {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 8px;
+  background:
+    linear-gradient(
+      90deg,
+      var(--border) 0,
+      var(--border) var(--range-start),
+      var(--primary) var(--range-start),
+      var(--primary) var(--range-end),
+      var(--border) var(--range-end),
+      var(--border) 100%
+    );
+  border-radius: 999px;
+  transform: translateY(-50%);
+}
+
+.dual-range input[type="range"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.dual-range input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background: transparent;
+}
+
+.dual-range input[type="range"]::-moz-range-track {
+  height: 8px;
+  background: transparent;
+}
+
+.dual-range input[type="range"]::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  margin-top: -7px;
+  background: var(--surface);
+  border: 3px solid var(--primary);
+  border-radius: 999px;
+  box-shadow: 0 3px 10px rgba(17, 24, 39, 0.2);
+  cursor: grab;
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.dual-range input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--surface);
+  border: 3px solid var(--primary);
+  border-radius: 999px;
+  box-shadow: 0 3px 10px rgba(17, 24, 39, 0.2);
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.download-dialog .primary-button {
+  width: 100%;
+}
+
 .dialog-close {
   position: absolute;
   top: 10px;
@@ -1193,14 +1495,23 @@ tr.matched td {
 
   .header-controls {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: stretch;
+    grid-template-columns: minmax(96px, 0.8fr) repeat(2, minmax(0, 1fr));
+    align-items: start;
     gap: 12px;
+  }
+
+  .reset-button {
+    width: 100%;
+    min-height: 44px;
+    align-self: start;
+    margin-top: 24px;
+    padding-inline: 10px;
   }
 
   .control-stack,
   .setting-select,
-  .segmented {
+  .segmented,
+  .birthday-term-control {
     width: 100%;
   }
 
@@ -1211,6 +1522,11 @@ tr.matched td {
 
   .header-controls .segmented {
     display: none;
+  }
+
+  .birthday-term-control label {
+    flex: 0 0 auto;
+    padding-left: 10px;
   }
 
   .mobile-setting-select {
@@ -1230,6 +1546,10 @@ tr.matched td {
   .theme-toggle .segment {
     min-width: 0;
     padding-inline: 6px;
+  }
+
+  .reset-button span {
+    white-space: nowrap;
   }
 
   .field-grid { grid-template-columns: 1fr; }

@@ -19,7 +19,7 @@ if (scriptMatch) {
 
 await writeFile(indexPath, html);
 
-for (const route of ["privacy", "terms", "updates"]) {
+for (const route of ["privacy", "terms", "updates", "history"]) {
   const routeDir = resolve(distDir, route);
   await mkdir(routeDir, { recursive: true });
   await writeFile(resolve(routeDir, "index.html"), html);

@@ -1,19 +1,22 @@
 import "./styles.css";
 import { calculateMatches, calculateReverseMatches, getDisplayRows, isGregorianDate, lunarToSolar, MAX_YEAR, MIN_YEAR } from "./calendar.js";
 import { formatIsoDate, formatLunar, formatSolar, formatYear } from "./format.js";
+import { createBirthdayIcs, createReverseIcs, downloadTextFile } from "./ics.js";
 import { translations } from "./translations.js";
 
 const storageKeys = {
   lang: "super-saengil-language",
   theme: "super-saengil-theme",
   mode: "super-saengil-mode",
+  birthdayTerm: "super-saengil-birthday-term",
   reverseUnlocked: "super-saengil-reverse-unlocked"
 };
 
 const state = {
-  lang: localStorage.getItem(storageKeys.lang) || "ko",
+  lang: preferredLanguage(),
   theme: localStorage.getItem(storageKeys.theme) || "system",
   mode: localStorage.getItem(storageKeys.mode) || "solar",
+  birthdayTerm: localStorage.getItem(storageKeys.birthdayTerm) || "birthday",
   searchMode: "normal",
   reverseMode: "solar",
   reverseUnlocked: false,
@@ -26,9 +29,32 @@ const state = {
   passwordError: "",
   passwordModalOpen: false,
   passwordAction: "unlock",
+  downloadModalOpen: false,
+  downloadKind: "normal",
+  downloadName: "",
+  downloadStartYear: "",
+  downloadEndYear: "",
+  downloadMaxYear: "",
+  downloadHonorificBirthday: false,
   copyMessage: "",
   expanded: false
 };
+
+function preferredLanguage() {
+  const saved = localStorage.getItem(storageKeys.lang);
+  if (saved === "ko" || saved === "en") return saved;
+
+  const browserLanguages = [
+    ...(navigator.languages || []),
+    navigator.language
+  ]
+    .filter(Boolean)
+    .map((language) => String(language).toLowerCase().split("-")[0]);
+
+  if (browserLanguages.includes("ko")) return "ko";
+  if (browserLanguages.includes("en")) return "en";
+  return "ko";
+}
 
 const app = document.querySelector("#app");
 const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -43,15 +69,59 @@ applyTheme();
 render();
 
 function t(key) {
+  return localizeBirthdayTerm(translations[state.lang][key]);
+}
+
+function rawT(key) {
   return translations[state.lang][key];
+}
+
+function isHonorificBirthday() {
+  return state.lang === "ko" && state.birthdayTerm === "honorific";
+}
+
+function localizeBirthdayTerm(value) {
+  if (!isHonorificBirthday()) return value;
+  if (typeof value === "string") return honorificBirthdayText(value);
+  if (Array.isArray(value)) return value.map((item) => localizeBirthdayTerm(item));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, localizeBirthdayTerm(item)]));
+  }
+  return value;
+}
+
+function honorificBirthdayText(value) {
+  return value
+    .replaceAll("Super Saengil", "Super Sangshin")
+    .replaceAll("Saengil", "Sangshin")
+    .replaceAll("슈퍼생일", "슈퍼생신")
+    .replaceAll("생일", "생신");
+}
+
+function appName() {
+  return localizeBirthdayTerm(translations.ko.appName);
+}
+
+function appSubtitle() {
+  return localizeBirthdayTerm(translations.ko.subtitle);
+}
+
+function officialAppName() {
+  return translations.ko.appName;
+}
+
+function officialAppSubtitle() {
+  return translations.ko.subtitle;
 }
 
 function render() {
   document.documentElement.lang = state.lang;
   const isReverse = state.reverseUnlocked && state.searchMode === "reverse";
   const legalPage = currentLegalPage();
-  const legalTitle = legalPage === "privacy" ? t("privacyTitle") : legalPage === "terms" ? t("termsTitle") : t("updatesTitle");
-  document.title = legalPage ? `${legalTitle} · ${translations.ko.appName}` : `${translations.ko.appName} · ${translations.ko.subtitle}`;
+  const legalTitle = legalPage === "privacy" ? rawT("privacyTitle") : legalPage === "terms" ? rawT("termsTitle") : legalPage === "history" ? rawT("historyTitle") : rawT("updatesTitle");
+  const headerAppName = legalPage === "privacy" || legalPage === "terms" ? officialAppName() : appName();
+  const headerAppSubtitle = legalPage === "privacy" || legalPage === "terms" ? officialAppSubtitle() : appSubtitle();
+  document.title = legalPage ? `${legalTitle} · ${officialAppName()}` : `${appName()} · ${appSubtitle()}`;
   app.innerHTML = `
     <div class="app-background" aria-hidden="true"></div>
     <div class="page">
@@ -65,12 +135,15 @@ function render() {
         <div class="brand">
           <span class="brand-icon" aria-label="${t("iconLogo")}">${brandIcon()}</span>
           <span>
-            <strong>${translations.ko.appName}</strong>
-            <small>${translations.ko.subtitle}</small>
+            <span class="brand-title">${headerAppName}</span>
+            <small>${headerAppSubtitle}</small>
           </span>
         </div>
         <div class="header-controls">
-          <div class="control-stack">
+          <button type="button" class="reset-button" data-reset-search aria-label="${escapeAttr(t("reset"))}" title="${escapeAttr(t("reset"))}">
+            ${icon("reset")}<span>${t("reset")}</span>
+          </button>
+          <div class="control-stack appearance-stack">
             <span>${t("languageLabel")}</span>
             <div class="segmented language-toggle" role="group" aria-label="${t("languageLabel")}">
               ${languageButton("ko", "한국어")}
@@ -94,12 +167,14 @@ function render() {
               <option value="light" ${state.theme === "light" ? "selected" : ""}>${t("light")}</option>
               <option value="dark" ${state.theme === "dark" ? "selected" : ""}>${t("dark")}</option>
             </select>
+            ${birthdayTermControl()}
           </div>
         </div>
       </header>
 
       ${legalPage ? legalPageTemplate(legalPage) : homePageTemplate(isReverse)}
       ${state.passwordModalOpen ? passwordModalTemplate() : ""}
+      ${state.downloadModalOpen ? downloadModalTemplate() : ""}
     </div>
   `;
   bindEvents();
@@ -188,6 +263,22 @@ function languageButton(value, label) {
     <button type="button" class="segment language-option" data-lang="${value}" aria-pressed="${state.lang === value}">
       <span>${label}</span>
     </button>
+  `;
+}
+
+function birthdayTermControl() {
+  if (state.lang !== "ko") return "";
+  return `
+    <fieldset class="birthday-term-control" aria-label="생일 또는 생신">
+      <label>
+        <input type="radio" name="birthdayTerm" value="birthday" ${state.birthdayTerm !== "honorific" ? "checked" : ""} />
+        <span>생일</span>
+      </label>
+      <label>
+        <input type="radio" name="birthdayTerm" value="honorific" ${state.birthdayTerm === "honorific" ? "checked" : ""} />
+        <span>생신</span>
+      </label>
+    </fieldset>
   `;
 }
 
@@ -281,7 +372,7 @@ function infoSectionTemplate() {
 
 function infoHeadlineTemplate() {
   if (state.lang === "ko") {
-    return `생일이 <span>두 배로</span> 특별해지는 날${secretPeriodTemplate()}`;
+    return `${isHonorificBirthday() ? "생신" : "생일"}이 <span>두 배로</span> 특별해지는 날${secretPeriodTemplate()}`;
   }
   return `When two birthdays become <span>one</span>${secretPeriodTemplate()}`;
 }
@@ -311,22 +402,100 @@ function passwordModalTemplate() {
   `;
 }
 
+function downloadModalTemplate() {
+  const bounds = getDownloadBounds();
+  const startYear = Number(state.downloadStartYear);
+  const endYear = Number(state.downloadEndYear);
+  const eventCount = getDownloadEventCount(state.downloadKind, startYear, endYear);
+  const rangeStyle = downloadRangeStyle(bounds.startYear, bounds.maxYear, startYear, endYear);
+  return `
+    <div class="modal-backdrop" role="presentation">
+      <dialog class="password-dialog download-dialog" open aria-labelledby="downloadTitle">
+        <button type="button" class="dialog-close" data-close-download aria-label="${escapeAttr(t("close"))}">
+          ${icon("x")}
+        </button>
+        <form id="downloadForm" novalidate>
+          <h2 id="downloadTitle">${t("downloadTitle")}</h2>
+          <p class="dialog-help">${t("downloadNameHelp")}</p>
+          <label class="field password-field">
+            <span class="visually-hidden">${t("downloadNameLabel")}</span>
+            <input id="downloadNameInput" name="downloadName" type="text" autocomplete="name" placeholder="${escapeAttr(t("downloadNamePlaceholder"))}" value="${escapeAttr(state.downloadName)}" />
+          </label>
+          ${state.lang === "ko" ? `
+            <fieldset class="birthday-term-choice" aria-label="${escapeAttr(rawT("downloadBirthdayTermLabel"))}">
+              <label>
+                <input type="radio" name="downloadBirthdayTerm" value="birthday" ${state.downloadHonorificBirthday ? "" : "checked"} />
+                <span>생일</span>
+              </label>
+              <label>
+                <input type="radio" name="downloadBirthdayTerm" value="honorific" ${state.downloadHonorificBirthday ? "checked" : ""} />
+                <span>생신</span>
+              </label>
+            </fieldset>
+          ` : ""}
+          <div class="download-range">
+            <div class="download-range-copy">
+              <div>
+                <span>${t("downloadStartYearLabel")}</span>
+                <strong data-download-start-text>${formatYear(startYear, state.lang)}</strong>
+              </div>
+              <div>
+                <span>${t("downloadEndYearLabelShort")}</span>
+                <strong data-download-end-text>${formatYear(endYear, state.lang)}</strong>
+              </div>
+              <strong class="download-count" data-download-count-text>${t("downloadCountValue").replace("{count}", String(eventCount))}</strong>
+            </div>
+            <div class="dual-range" style="${rangeStyle}">
+              <div class="dual-range-track" aria-hidden="true"></div>
+              <input
+                id="downloadStartYear"
+                name="downloadStartYear"
+                type="range"
+                min="${bounds.startYear}"
+                max="${bounds.maxYear}"
+                value="${state.downloadStartYear}"
+                step="1"
+                aria-label="${escapeAttr(t("downloadStartYearAria"))}"
+                data-download-start-year
+              />
+              <input
+                id="downloadEndYear"
+                name="downloadEndYear"
+                type="range"
+                min="${bounds.startYear}"
+                max="${bounds.maxYear}"
+                value="${state.downloadEndYear}"
+                step="1"
+                aria-label="${escapeAttr(t("downloadEndYearLabel"))}"
+                data-download-end-year
+              />
+            </div>
+          </div>
+          <button class="primary-button password-unlock" type="submit">${t("downloadCalendar")}</button>
+        </form>
+      </dialog>
+    </div>
+  `;
+}
+
 function legalPageTemplate(page) {
   if (page === "updates") return updateLogTemplate();
+  if (page === "history") return historyPageTemplate();
 
-  const pageTitle = page === "privacy" ? t("privacyTitle") : t("termsTitle");
-  const pageUpdated = page === "privacy" ? t("privacyUpdated") : t("termsUpdated");
-  const pageIntro = page === "privacy" ? t("privacyIntro") : t("termsIntro");
-  const pageSections = page === "privacy" ? t("privacySections") : t("termsSections");
+  const pageTitle = page === "privacy" ? rawT("privacyTitle") : rawT("termsTitle");
+  const pageUpdated = page === "privacy" ? rawT("privacyUpdated") : rawT("termsUpdated");
+  const pageIntro = page === "privacy" ? rawT("privacyIntro") : rawT("termsIntro");
+  const pageSections = page === "privacy" ? rawT("privacySections") : rawT("termsSections");
   return `
     <main>
       <article class="legal-card" aria-labelledby="legalTitle">
-        <a class="back-link" href="${homeHref()}">${icon("calendar")}<span>${t("backToHome")}</span></a>
+        <a class="back-link" href="${homeHref()}">${icon("calendar")}<span>${rawT("backToHome")}</span></a>
         <header class="legal-header">
           <h1 id="legalTitle">${pageTitle}</h1>
           <p>${pageUpdated}</p>
         </header>
         <div class="legal-body">
+          ${honorificLegalNoticeTemplate()}
           ${pageIntro.map((paragraph) => `<p>${paragraph}</p>`).join("")}
           ${pageSections.map((section, index) => `
             <section class="legal-section" aria-labelledby="legalSection${index + 1}">
@@ -338,6 +507,32 @@ function legalPageTemplate(page) {
       </article>
     </main>
     ${siteFooterTemplate()}
+  `;
+}
+
+function historyPageTemplate() {
+  return `
+    <main>
+      <article class="legal-card history-card" aria-labelledby="legalTitle">
+        <a class="back-link" href="${homeHref()}">${icon("calendar")}<span>${t("backToHome")}</span></a>
+        <header class="legal-header">
+          <h1 id="legalTitle">${rawT("historyTitle")}</h1>
+        </header>
+        <div class="legal-body history-body">
+          ${rawT("historyBody").map((paragraph) => `<p>${paragraph}</p>`).join("")}
+        </div>
+      </article>
+    </main>
+    ${siteFooterTemplate()}
+  `;
+}
+
+function honorificLegalNoticeTemplate() {
+  if (!isHonorificBirthday()) return "";
+  return `
+    <p class="legal-note">
+      슈퍼생일은 앱의 공식 명칭입니다. 슈퍼생신은 한국어 화면에서 선택할 수 있는 표시 방식이며, 별도의 서비스나 법적 명칭이 아닙니다.
+    </p>
   `;
 }
 
@@ -385,6 +580,7 @@ function legalParagraphTemplate(page, paragraph) {
 function siteFooterTemplate() {
   return `
     <footer class="site-footer">
+      <a href="${historyHref()}">${t("historyLink")}</a>
       <a href="${privacyHref()}">${t("privacyLink")}</a>
       <a href="${termsHref()}">${t("termsLink")}</a>
       <a href="${updatesHref()}">${t("updatesLink")}</a>
@@ -397,12 +593,15 @@ function resultsTemplate() {
   const sourceNote = result.lunarBirthday.isLeapMonth ? t("recurrenceNoteLeap") : t("recurrenceNoteRegular");
   return `
     <section id="searchResults" class="summary-card" aria-labelledby="matchingTitle" tabindex="-1">
-      <div class="section-heading">
-        <span class="mini-icon">${icon("calendar")}</span>
-        <div>
-          <h2 id="matchingTitle">${t("matchingYears")}</h2>
-          <p>${t("showThrough")}</p>
+      <div class="section-heading section-heading-with-action">
+        <div class="heading-copy">
+          <span class="mini-icon">${icon("calendar")}</span>
+          <div>
+            <h2 id="matchingTitle">${t("matchingYears")}</h2>
+            <p>${t("showThrough")}</p>
+          </div>
         </div>
+        ${downloadButtonTemplate("normal")}
       </div>
       <div class="converted">
         <strong>${t("converted")}</strong>
@@ -439,12 +638,15 @@ function reverseResultsTemplate() {
   const missingCount = reverseResult.rows.filter((row) => row.missingReason).length;
   return `
     <section id="searchResults" class="summary-card reverse-results" aria-labelledby="reverseMatchingTitle" tabindex="-1">
-      <div class="section-heading">
-        <span class="mini-icon">${icon("calendar")}</span>
-        <div>
-          <h2 id="reverseMatchingTitle">${t("matchingYears")}</h2>
-          <p>${t("reverseYearRange")}</p>
+      <div class="section-heading section-heading-with-action">
+        <div class="heading-copy">
+          <span class="mini-icon">${icon("calendar")}</span>
+          <div>
+            <h2 id="reverseMatchingTitle">${t("matchingYears")}</h2>
+            <p>${t("reverseYearRange")}</p>
+          </div>
         </div>
+        ${downloadButtonTemplate("reverse")}
       </div>
       <div class="converted">
         <strong>${t("targetDate")}</strong>
@@ -469,6 +671,14 @@ function reverseResultsTemplate() {
       ${reverseTableTemplate(reverseResult.rows)}
       <p class="footer-note">${t("footerNote")}</p>
     </section>
+  `;
+}
+
+function downloadButtonTemplate(kind) {
+  return `
+    <button type="button" class="download-button" data-download-ics="${kind}" aria-label="${escapeAttr(t("downloadCalendar"))}" title="${escapeAttr(t("downloadCalendar"))}">
+      ${icon("download")}
+    </button>
   `;
 }
 
@@ -594,6 +804,11 @@ function statusCell(row) {
 }
 
 function bindEvents() {
+  document.querySelector("[data-reset-search]")?.addEventListener("click", () => {
+    resetSearch();
+    render();
+  });
+
   document.querySelectorAll("[data-lang]").forEach((button) => {
     button.addEventListener("click", () => {
       state.lang = button.dataset.lang;
@@ -607,6 +822,15 @@ function bindEvents() {
       state.theme = button.dataset.appearance;
       localStorage.setItem(storageKeys.theme, state.theme);
       applyTheme();
+      render();
+    });
+  });
+
+  document.querySelectorAll('input[name="birthdayTerm"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      state.birthdayTerm = input.value === "honorific" ? "honorific" : "birthday";
+      localStorage.setItem(storageKeys.birthdayTerm, state.birthdayTerm);
+      state.downloadHonorificBirthday = isHonorificBirthday();
       render();
     });
   });
@@ -687,6 +911,29 @@ function bindEvents() {
     });
   }
 
+  const downloadForm = document.querySelector("#downloadForm");
+  if (downloadForm) {
+    downloadForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = new FormData(downloadForm);
+      state.downloadName = String(form.get("downloadName") || "").trim();
+      state.downloadHonorificBirthday = form.get("downloadBirthdayTerm") === "honorific";
+      setDownloadYears(form.get("downloadStartYear") || state.downloadStartYear, form.get("downloadEndYear") || state.downloadEndYear);
+      downloadCalendar();
+    });
+  }
+
+  bindDownloadRangeInput("[data-download-start-year]");
+  bindDownloadRangeInput("[data-download-end-year]");
+
+  const closeDownloadButton = document.querySelector("[data-close-download]");
+  if (closeDownloadButton) {
+    closeDownloadButton.addEventListener("click", () => {
+      closeDownloadModal();
+      render();
+    });
+  }
+
   const formElement = document.querySelector("#birthdayForm");
   if (formElement) {
     formElement.addEventListener("submit", (event) => {
@@ -720,6 +967,10 @@ function bindEvents() {
   if (copyButton) {
     copyButton.addEventListener("click", () => copyReverseResults());
   }
+
+  document.querySelectorAll("[data-download-ics]").forEach((button) => {
+    button.addEventListener("click", () => openDownloadModal(button.dataset.downloadIcs));
+  });
 }
 
 function syncFieldsFromForm(formElement) {
@@ -879,9 +1130,42 @@ function resetInternalSearch() {
   state.result = null;
   state.reverseResult = null;
   state.error = "";
+  state.downloadModalOpen = false;
+  state.downloadKind = "normal";
+  state.downloadName = "";
+  state.downloadStartYear = "";
+  state.downloadEndYear = "";
+  state.downloadMaxYear = "";
+  state.downloadHonorificBirthday = false;
   state.copyMessage = "";
   state.expanded = false;
   localStorage.removeItem(storageKeys.reverseUnlocked);
+  localStorage.setItem(storageKeys.mode, state.mode);
+  history.replaceState(null, "", location.pathname);
+}
+
+function resetSearch() {
+  state.mode = "solar";
+  state.searchMode = "normal";
+  state.reverseMode = "solar";
+  state.fields = { year: "", month: "", day: "", isLeapMonth: "false" };
+  state.reverseFields = { ...todayFields(), isLeapMonth: "false" };
+  state.result = null;
+  state.reverseResult = null;
+  state.error = "";
+  state.password = "";
+  state.passwordError = "";
+  state.passwordModalOpen = false;
+  state.passwordAction = "unlock";
+  state.downloadModalOpen = false;
+  state.downloadKind = "normal";
+  state.downloadName = "";
+  state.downloadStartYear = "";
+  state.downloadEndYear = "";
+  state.downloadMaxYear = "";
+  state.downloadHonorificBirthday = false;
+  state.copyMessage = "";
+  state.expanded = false;
   localStorage.setItem(storageKeys.mode, state.mode);
   history.replaceState(null, "", location.pathname);
 }
@@ -890,6 +1174,7 @@ function currentLegalPage() {
   if (/\/privacy\/?(index\.html)?$/.test(location.pathname)) return "privacy";
   if (/\/terms\/?(index\.html)?$/.test(location.pathname)) return "terms";
   if (/\/updates\/?(index\.html)?$/.test(location.pathname)) return "updates";
+  if (/\/history\/?(index\.html)?$/.test(location.pathname)) return "history";
   return "";
 }
 
@@ -907,6 +1192,10 @@ function termsHref() {
 
 function updatesHref() {
   return currentLegalPage() ? "../updates/index.html" : "updates/index.html";
+}
+
+function historyHref() {
+  return currentLegalPage() ? "../history/index.html" : "history/index.html";
 }
 
 function homeHref() {
@@ -937,6 +1226,118 @@ async function copyReverseResults() {
   }
   state.copyMessage = t("copied");
   render();
+}
+
+function openDownloadModal(kind) {
+  state.downloadKind = kind === "reverse" ? "reverse" : "normal";
+  const bounds = getDownloadBounds();
+  state.downloadName = "";
+  state.downloadStartYear = String(bounds.startYear);
+  state.downloadEndYear = String(bounds.maxYear);
+  state.downloadMaxYear = String(bounds.maxYear);
+  state.downloadHonorificBirthday = isHonorificBirthday();
+  state.downloadModalOpen = true;
+  render();
+  document.querySelector("#downloadNameInput")?.focus();
+}
+
+function closeDownloadModal() {
+  state.downloadModalOpen = false;
+  state.downloadKind = "normal";
+  state.downloadName = "";
+  state.downloadStartYear = "";
+  state.downloadEndYear = "";
+  state.downloadMaxYear = "";
+  state.downloadHonorificBirthday = false;
+}
+
+function downloadCalendar() {
+  const result = state.downloadKind === "reverse" ? state.reverseResult : state.result;
+  if (!result) return;
+  const startYear = Number(state.downloadStartYear) || getDownloadBounds().startYear;
+  const endYear = Number(state.downloadEndYear) || getDownloadBounds().maxYear;
+  const calendar = state.downloadKind === "reverse"
+    ? createReverseIcs({ result, lang: state.lang, name: state.downloadName, startYear, endYear })
+    : createBirthdayIcs({
+        result,
+        lang: state.lang,
+        name: state.downloadName,
+        birthdayTerm: state.downloadHonorificBirthday ? "honorific" : "birthday",
+        startYear,
+        endYear
+      });
+  closeDownloadModal();
+  downloadTextFile(calendar.content, calendar.filename);
+  render();
+}
+
+function bindDownloadRangeInput(selector) {
+  const input = document.querySelector(selector);
+  if (!input) return;
+  input.addEventListener("input", () => {
+    const startInput = document.querySelector("[data-download-start-year]");
+    const endInput = document.querySelector("[data-download-end-year]");
+    setDownloadYears(startInput?.value || state.downloadStartYear, endInput?.value || state.downloadEndYear);
+    if (startInput) startInput.value = state.downloadStartYear;
+    if (endInput) endInput.value = state.downloadEndYear;
+    updateDownloadRangeDisplay();
+  });
+}
+
+function setDownloadYears(startValue, endValue) {
+  const bounds = getDownloadBounds();
+  let startYear = clampYear(Number(startValue), bounds.startYear, bounds.maxYear);
+  let endYear = clampYear(Number(endValue), bounds.startYear, bounds.maxYear);
+  if (startYear > endYear) {
+    if (String(startValue) === state.downloadStartYear) startYear = endYear;
+    else endYear = startYear;
+  }
+  state.downloadStartYear = String(startYear);
+  state.downloadEndYear = String(endYear);
+}
+
+function updateDownloadRangeDisplay() {
+  const bounds = getDownloadBounds();
+  const startYear = Number(state.downloadStartYear);
+  const endYear = Number(state.downloadEndYear);
+  const count = getDownloadEventCount(state.downloadKind, startYear, endYear);
+  document.querySelector("[data-download-start-text]")?.replaceChildren(formatYear(startYear, state.lang));
+  document.querySelector("[data-download-end-text]")?.replaceChildren(formatYear(endYear, state.lang));
+  document.querySelector("[data-download-count-text]")?.replaceChildren(t("downloadCountValue").replace("{count}", String(count)));
+  document.querySelector(".dual-range")?.setAttribute("style", downloadRangeStyle(bounds.startYear, bounds.maxYear, startYear, endYear));
+}
+
+function getDownloadBounds(kind = state.downloadKind) {
+  const years = getDownloadEventYears(kind);
+  if (!years.length) return { startYear: MAX_YEAR, maxYear: MAX_YEAR };
+  return { startYear: years[0], maxYear: years.at(-1) };
+}
+
+function getDownloadEventYears(kind = state.downloadKind) {
+  if (kind === "reverse") {
+    return (state.reverseResult?.matches || [])
+      .filter((row) => row.solarBirthday)
+      .map((row) => row.solarBirthday.year);
+  }
+  return (state.result?.rows || [])
+    .filter((row) => row.recurrentSolar)
+    .map((row) => row.recurrentSolar.year);
+}
+
+function getDownloadEventCount(kind, startYear, endYear) {
+  return getDownloadEventYears(kind).filter((year) => year >= startYear && year <= endYear).length;
+}
+
+function downloadRangeStyle(minYear, maxYear, startYear, endYear) {
+  const span = Math.max(maxYear - minYear, 1);
+  const startPercent = ((startYear - minYear) / span) * 100;
+  const endPercent = ((endYear - minYear) / span) * 100;
+  return `--range-start: ${startPercent}%; --range-end: ${endPercent}%;`;
+}
+
+function clampYear(year, minYear, maxYear) {
+  if (!Number.isFinite(year)) return minYear;
+  return Math.min(maxYear, Math.max(minYear, Math.round(year)));
 }
 
 function reverseCopyText(result) {
@@ -1009,6 +1410,8 @@ function icon(name) {
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     moon: '<path d="M19.7 14.9A7.6 7.6 0 0 1 9.1 4.3a8 8 0 1 0 10.6 10.6z"/>',
     monitor: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+    reset: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/>',
+    download: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
     check: '<path d="M20 6L9 17l-5-5"/>',
     copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
     x: '<path d="M18 6L6 18M6 6l12 12"/>',
