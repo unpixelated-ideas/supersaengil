@@ -157,8 +157,9 @@ export const translations = {
     termsLink: "이용약관",
     historyLink: "음력 알아보기",
     updatesLink: "업데이트 로그",
+    feedbackLink: "피드백",
     updatesTitle: "업데이트 로그",
-    updatesUpdated: "최종 업데이트: 2026년 8월 29일",
+    updatesUpdated: "최종 업데이트: 2026년 8월 31일",
     updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
     historyTitle: "역사",
     historyBody: [
@@ -172,6 +173,14 @@ export const translations = {
       "“슈퍼생일,” 또는 “Super Birthday”는 해마다 돌아오는 양력 생일과 음력 생일이 같은 날에 겹치는 해를 가리킵니다. 예를 들어 1988년 8월 18일에 양력으로 태어난 사람은 음력 7월 7일에 태어난 것입니다. 8월 18일과 음력 7월 7일이 다시 같은 날이 되는 다음 해는 2075년이며, 이때 그 사람은 자신의 “슈퍼생일”을 기념할 수 있습니다."
     ],
     updatesEntries: [
+      {
+        version: "v0.9.3",
+        date: "2026년 8월 31일",
+        dateIso: "2026-08-31",
+        items: [
+          "사용자 의견을 받을 수 있도록 피드백 링크를 추가했습니다."
+        ]
+      },
       {
         version: "v0.9.2",
         date: "2026년 8월 29일",
@@ -471,8 +480,9 @@ export const translations = {
     termsLink: "Terms of Use",
     historyLink: "Lunar Calendar Explained",
     updatesLink: "Update Log",
+    feedbackLink: "Feedback",
     updatesTitle: "Update Log",
-    updatesUpdated: "Last updated: August 29, 2026",
+    updatesUpdated: "Last updated: August 31, 2026",
     updatesIntro: "A running record of major Super Saengil changes and improvements.",
     historyTitle: "History",
     historyBody: [
@@ -486,6 +496,14 @@ export const translations = {
       "A “super saengil” (슈퍼생일), or “super birthday,” describes a year in which a person’s recurring solar-calendar birthday and lunar-calendar birthday fall on the same day. For example, a person born on August 18, 1988 according to the Gregorian calendar was born on the seventh day of the seventh lunar month (음력 7월 7일). The next time that August 18 and lunar July 7 fall on the same day will be in 2075, allowing this person to celebrate their “super saengil.”"
     ],
     updatesEntries: [
+      {
+        version: "v0.9.3",
+        date: "August 31, 2026",
+        dateIso: "2026-08-31",
+        items: [
+          "Added a feedback link to collect user input."
+        ]
+      },
       {
         version: "v0.9.2",
         date: "August 29, 2026",

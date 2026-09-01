@@ -584,6 +584,7 @@ function siteFooterTemplate() {
       <a href="${privacyHref()}">${t("privacyLink")}</a>
       <a href="${termsHref()}">${t("termsLink")}</a>
       <a href="${updatesHref()}">${t("updatesLink")}</a>
+      <a href="${feedbackHref()}" target="_blank" rel="noopener noreferrer">${t("feedbackLink")}</a>
     </footer>
   `;
 }
@@ -1196,6 +1197,10 @@ function updatesHref() {
 
 function historyHref() {
   return currentLegalPage() ? "../history/index.html" : "history/index.html";
+}
+
+function feedbackHref() {
+  return state.lang === "en" ? "https://forms.gle/a3MwRuEbXrjJtroo8" : "https://forms.gle/xzdA9z1RYmiFkb1L9";
 }
 
 function homeHref() {

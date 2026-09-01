@@ -142,6 +142,23 @@ describe("Super Saengil interface", () => {
     expect(englishLink.textContent).toBe("Update Log");
   });
 
+  it("shows a localized external feedback link in the homepage footer", async () => {
+    await loadApp();
+    const link = [...document.querySelectorAll(".site-footer a")].find((footerLink) => footerLink.textContent.includes("피드백"));
+
+    expect(link).toBeTruthy();
+    expect(link.textContent).toBe("피드백");
+    expect(link.getAttribute("href")).toBe("https://forms.gle/xzdA9z1RYmiFkb1L9");
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+
+    document.querySelector('[data-lang="en"]').click();
+    const englishLink = [...document.querySelectorAll(".site-footer a")].find((footerLink) => footerLink.textContent.includes("Feedback"));
+    expect(englishLink).toBeTruthy();
+    expect(englishLink.textContent).toBe("Feedback");
+    expect(englishLink.getAttribute("href")).toBe("https://forms.gle/a3MwRuEbXrjJtroo8");
+  });
+
   it("renders the Terms page directly and switches languages there", async () => {
     installDom("http://localhost/terms/");
     await loadApp();
@@ -169,7 +186,7 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 8월 29일");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 8월 31일");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
@@ -181,7 +198,7 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: August 29, 2026");
+    expect(document.body.textContent).toContain("Last updated: August 31, 2026");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("August 26, 2026");
     expect(document.body.textContent).toContain("Optimized the experience for mobile and tablet users.");
