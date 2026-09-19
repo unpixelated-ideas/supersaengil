@@ -109,7 +109,7 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(info()).toContain("When two birthdays become one.");
-    expect(info()).toContain("What's a Super Birthday?");
+    expect(info()).toContain("What's a Super Saengil?");
     expect(info()).not.toContain("생일이 두 배로 특별해지는 날.");
     expect(info()).not.toContain("슈퍼생일이란?");
   });
@@ -186,7 +186,7 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 8월 31일");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 9월 18일");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
@@ -198,7 +198,7 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: August 31, 2026");
+    expect(document.body.textContent).toContain("Last updated: September 18, 2026");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("August 26, 2026");
     expect(document.body.textContent).toContain("Optimized the experience for mobile and tablet users.");
@@ -429,9 +429,11 @@ describe("Super Saengil interface", () => {
     expect(button.getAttribute("aria-label")).toBe("Download calendar file");
     expect(button.textContent.trim()).toBe("");
     expect(document.querySelector(".section-heading-with-action .download-button")).toBe(button);
+    expect(button.innerHTML).toContain("M12 14v5");
   });
 
   it("downloads localized normal-search ICS text with an optional prompted name", async () => {
+    vi.useFakeTimers();
     await loadApp();
     const click = vi.spyOn(window.HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
     const createObjectURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:calendar");
@@ -463,6 +465,19 @@ describe("Super Saengil interface", () => {
     document.querySelector("#downloadNameInput").value = "Mina";
     document.querySelector("#downloadForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
 
+    expect(document.querySelector("#downloadCreatingTitle").textContent).toBe("Creating calendar file");
+    expect(document.body.textContent).toContain("Preparing your calendar file…");
+    expect(document.body.textContent).toContain("this ICS file includes 2 separate dates");
+    expect(document.body.textContent).toContain("each calendar event may need to be changed or deleted manually");
+    expect(document.querySelector("[data-confirm-download]").disabled).toBe(true);
+    expect(click).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(document.querySelector("#downloadCreatingTitle").textContent).toBe("Calendar file ready");
+    expect(document.body.textContent).toContain("Your calendar file is ready to download.");
+    expect(document.querySelector("[data-confirm-download]").disabled).toBe(false);
+    expect(click).not.toHaveBeenCalled();
+    document.querySelector("[data-confirm-download]").click();
+
     const blob = createObjectURL.mock.calls[0][0];
     const content = await blob.text();
     expect(content).toContain("SUMMARY:Mina's Lunar Birthday");
@@ -473,9 +488,34 @@ describe("Super Saengil interface", () => {
     expect(content).not.toContain("DTSTART;VALUE=DATE:19960422");
     expect(click).toHaveBeenCalled();
     expect(document.querySelector("#downloadForm")).toBeNull();
+    vi.useRealTimers();
+  });
+
+  it("can close the creating-download screen before the file is ready", async () => {
+    vi.useFakeTimers();
+    await loadApp();
+    const click = vi.spyOn(window.HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:calendar");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+
+    document.querySelector("#year").value = "1993";
+    document.querySelector("#month").value = "3";
+    document.querySelector("#day").value = "27";
+    document.querySelector("#birthdayForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    document.querySelector('[data-download-ics="normal"]').click();
+    document.querySelector("#downloadForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+
+    expect(document.querySelector("#downloadCreatingTitle")).toBeTruthy();
+    document.querySelector("[data-close-download]").click();
+    await vi.advanceTimersByTimeAsync(1500);
+
+    expect(document.querySelector("#downloadCreatingTitle")).toBeNull();
+    expect(click).not.toHaveBeenCalled();
+    vi.useRealTimers();
   });
 
   it("lets Korean downloads use the honorific birthday term", async () => {
+    vi.useFakeTimers();
     await loadApp();
     const createObjectURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:calendar");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
@@ -505,9 +545,12 @@ describe("Super Saengil interface", () => {
     expect(honorific.checked).toBe(true);
     document.querySelector("#downloadNameInput").value = "어머니";
     document.querySelector("#downloadForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    await vi.advanceTimersByTimeAsync(1500);
+    document.querySelector("[data-confirm-download]").click();
 
     const content = await createObjectURL.mock.calls[0][0].text();
     expect(content).toContain("SUMMARY:어머니 음력 생신");
+    vi.useRealTimers();
   });
 
   it("keeps birthday fields focused while typing", async () => {
@@ -575,6 +618,7 @@ describe("Super Saengil interface", () => {
   });
 
   it("downloads Korean reverse-search ICS text when Korean is active", async () => {
+    vi.useFakeTimers();
     await loadApp();
     const createObjectURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:calendar");
     vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
@@ -591,10 +635,17 @@ describe("Super Saengil interface", () => {
     document.querySelector('[data-download-ics="reverse"]').click();
     expect(document.querySelector("#downloadTitle").textContent).toBe("캘린더 파일 다운로드");
     document.querySelector("#downloadForm").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    expect(document.querySelector("#downloadCreatingTitle").textContent).toBe("캘린더 파일 생성 중");
+    expect(document.body.textContent).toContain("캘린더 파일을 준비하고 있습니다…");
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(document.querySelector("#downloadCreatingTitle").textContent).toBe("캘린더 파일 준비 완료");
+    expect(document.body.textContent).toContain("캘린더 파일을 다운로드할 수 있습니다.");
+    document.querySelector("[data-confirm-download]").click();
 
     const content = await createObjectURL.mock.calls[0][0].text();
     expect(content).toContain("SUMMARY:역방향 생일 일치");
     expect(content).toContain("대상 날짜: 2017년 6월 24일");
+    vi.useRealTimers();
   });
 
   it("lets reverse search use a lunar target date", async () => {

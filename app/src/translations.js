@@ -93,6 +93,12 @@ export const translations = {
     downloadCountValue: "{count}개 날짜",
     downloadStartYearAria: "캘린더 파일 시작 연도",
     downloadEndYearLabel: "캘린더 파일 마지막 연도",
+    downloadCreatingTitle: "캘린더 파일 생성 중",
+    downloadCreatingBody: "캘린더 파일을 준비하고 있습니다…",
+    downloadReadyTitle: "캘린더 파일 준비 완료",
+    downloadReadyBody: "캘린더 파일을 다운로드할 수 있습니다.",
+    downloadWarningCount: "대부분의 캘린더 앱은 반복 일정을 표준 양력(그레고리력) 기준으로 처리하므로, 이 ICS 파일에는 {count}개의 날짜가 각각 별도 일정으로 포함됩니다.",
+    downloadWarningManual: "나중에 수정하거나 삭제하려면 각 일정을 직접 변경하거나 삭제해야 할 수 있습니다.",
     copyResults: "결과 복사",
     copied: "복사되었습니다.",
     reverseCopyHeading: "역방향 생일 조회",
@@ -159,7 +165,7 @@ export const translations = {
     updatesLink: "업데이트 로그",
     feedbackLink: "피드백",
     updatesTitle: "업데이트 로그",
-    updatesUpdated: "최종 업데이트: 2026년 8월 31일",
+    updatesUpdated: "최종 업데이트: 2026년 9월 18일",
     updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
     historyTitle: "역사",
     historyBody: [
@@ -173,6 +179,23 @@ export const translations = {
       "“슈퍼생일,” 또는 “Super Birthday”는 해마다 돌아오는 양력 생일과 음력 생일이 같은 날에 겹치는 해를 가리킵니다. 예를 들어 1988년 8월 18일에 양력으로 태어난 사람은 음력 7월 7일에 태어난 것입니다. 8월 18일과 음력 7월 7일이 다시 같은 날이 되는 다음 해는 2075년이며, 이때 그 사람은 자신의 “슈퍼생일”을 기념할 수 있습니다."
     ],
     updatesEntries: [
+      {
+        version: "v0.9.5",
+        date: "2026년 9월 18일",
+        dateIso: "2026-09-18",
+        items: [
+          "로고를 업데이트했습니다.",
+          "검색 결과 표의 영어 항목명을 더 명확하게 다듬었습니다."
+        ]
+      },
+      {
+        version: "v0.9.4",
+        date: "2026년 9월 6일",
+        dateIso: "2026-09-06",
+        items: [
+          "모바일 사용성을 개선했으며, 특히 검색 결과가 표시되는 방식을 다듬었습니다."
+        ]
+      },
       {
         version: "v0.9.3",
         date: "2026년 8월 31일",
@@ -359,10 +382,10 @@ export const translations = {
     allYears: "All years",
     addThrough: "Add Through 2127",
     year: "Year",
-    solarBirthday: "Solar birthday",
-    gregorianLunarBirthday: "Gregorian lunar-birthday date",
-    lunarBirthday: "Lunar birthday",
-    match: "Match",
+    solarBirthday: "Solar date",
+    gregorianLunarBirthday: "Solar date of lunar birthday",
+    lunarBirthday: "Lunar date",
+    match: "Super Saengil?",
     matchLabel: "Match",
     noMatch: "No match",
     missing: "Does not exist",
@@ -416,6 +439,12 @@ export const translations = {
     downloadCountValue: "{count} dates",
     downloadStartYearAria: "Calendar file start year",
     downloadEndYearLabel: "Calendar file end year",
+    downloadCreatingTitle: "Creating calendar file",
+    downloadCreatingBody: "Preparing your calendar file…",
+    downloadReadyTitle: "Calendar file ready",
+    downloadReadyBody: "Your calendar file is ready to download.",
+    downloadWarningCount: "Because mainstream calendar apps handle recurring dates using the standard solar Gregorian calendar, this ICS file includes {count} separate dates.",
+    downloadWarningManual: "To modify or remove them later, each calendar event may need to be changed or deleted manually.",
     copyResults: "Copy results",
     copied: "Copied.",
     reverseCopyHeading: "Reverse birthday lookup",
@@ -428,12 +457,12 @@ export const translations = {
     inputHelp: "Enter a birthday to calculate matching years through 2127.",
     infoHeadline: "When two birthdays become one.",
     infoSubheadline: "Compare solar and lunar birthdays and discover the special years when they fall on the same day.",
-    infoCard1Title: "What's a Super Birthday?",
-    infoCard1Body: "A Super Birthday is the rare occasion when your solar and lunar birthdays fall on the same day. Find out when yours line up again.",
+    infoCard1Title: "What's a Super Saengil?",
+    infoCard1Body: "A Super Saengil, or “Super Birthday” in English, is the rare occasion when your solar and lunar birthdays fall on the same day. Find out when yours line up again.",
     infoCard2Title: "See birthdays ahead",
     infoCard2Body: "See solar and lunar birthday dates through 2127, making it easy to keep track of your own birthdays and those of family and friends.",
-    infoCard3Title: "Celebrate your Super Birthday",
-    infoCard3Body: "Find your next Super Birthday in advance and make the once-in-a-while occasion worth celebrating.",
+    infoCard3Title: "Celebrate your Super Saengil",
+    infoCard3Body: "Find your next Super Saengil in advance and make the once-in-a-while occasion worth celebrating.",
     privacyLink: "Privacy Policy",
     privacyTitle: "Privacy Policy",
     privacyUpdated: "Last updated: August 18, 2026",
@@ -482,7 +511,7 @@ export const translations = {
     updatesLink: "Update Log",
     feedbackLink: "Feedback",
     updatesTitle: "Update Log",
-    updatesUpdated: "Last updated: August 31, 2026",
+    updatesUpdated: "Last updated: September 18, 2026",
     updatesIntro: "A running record of major Super Saengil changes and improvements.",
     historyTitle: "History",
     historyBody: [
@@ -496,6 +525,23 @@ export const translations = {
       "A “super saengil” (슈퍼생일), or “super birthday,” describes a year in which a person’s recurring solar-calendar birthday and lunar-calendar birthday fall on the same day. For example, a person born on August 18, 1988 according to the Gregorian calendar was born on the seventh day of the seventh lunar month (음력 7월 7일). The next time that August 18 and lunar July 7 fall on the same day will be in 2075, allowing this person to celebrate their “super saengil.”"
     ],
     updatesEntries: [
+      {
+        version: "v0.9.5",
+        date: "September 18, 2026",
+        dateIso: "2026-09-18",
+        items: [
+          "Updated the logo.",
+          "Clarified the English labels in the search results table."
+        ]
+      },
+      {
+        version: "v0.9.4",
+        date: "September 6, 2026",
+        dateIso: "2026-09-06",
+        items: [
+          "Improved the mobile experience, especially how search results are displayed."
+        ]
+      },
       {
         version: "v0.9.3",
         date: "August 31, 2026",

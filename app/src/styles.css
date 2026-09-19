@@ -61,7 +61,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100svh;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: var(--canvas-top);
   color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -133,38 +133,6 @@ svg { width: 1.1rem; height: 1.1rem; }
   opacity: 0.28;
 }
 
-.decor {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.sparkle {
-  position: absolute;
-  width: 28px;
-  height: 28px;
-  color: var(--primary);
-  opacity: 0.58;
-}
-
-.sparkle::before,
-.sparkle::after {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  content: "";
-  background: currentColor;
-  border-radius: 999px;
-  transform: translate(-50%, -50%);
-}
-
-.sparkle::before { width: 4px; height: 100%; }
-.sparkle::after { width: 100%; height: 4px; }
-.sparkle-a { top: 36px; left: 32%; }
-.sparkle-b { top: 78px; left: 43%; transform: scale(0.72); }
-.sparkle-c { top: 452px; right: 16%; transform: scale(0.84); }
-.sparkle-d { top: 560px; left: 7%; transform: scale(0.65); }
-
 .topbar {
   display: flex;
   align-items: flex-start;
@@ -174,34 +142,41 @@ svg { width: 1.1rem; height: 1.1rem; }
 }
 
 .brand {
+  --brand-title-size: clamp(2.2rem, 5vw, 3.1rem);
+  --brand-subtitle-size: clamp(0.98325rem, 2.1375vw, 1.23975rem);
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 18px;
 }
 
 .brand-icon {
-  display: grid;
-  place-items: center;
-  width: 76px;
-  height: 76px;
+  position: relative;
+  flex: none;
+  width: calc(var(--brand-title-size) * 1.02 + 5px + var(--brand-subtitle-size) * 1.2);
   filter: drop-shadow(0 14px 20px rgba(38, 31, 105, 0.28));
-  overflow: hidden;
-  border-radius: 999px;
-  background: #111827;
 }
 
 .brand-image {
-  width: 100%;
-  height: 100%;
+  /* Offset the PNG's transparent margins to align the visible artwork. */
+  position: absolute;
+  top: -20%;
+  left: -19.73%;
+  width: 139.8%;
+  height: 140.9%;
   display: block;
   object-fit: cover;
   object-position: center;
+  clip-path: ellipse(35.3% 35% at 49.9% 49.7%);
+  /* Gently antialias the fine artwork at the small header display size. */
+  filter: blur(0.35px);
+  image-rendering: auto;
+  transform: translateZ(0);
 }
 
 .brand-title {
   display: block;
   color: var(--text);
-  font-size: clamp(2.2rem, 5vw, 3.1rem);
+  font-size: var(--brand-title-size);
   font-weight: 650;
   line-height: 1.02;
 }
@@ -210,8 +185,9 @@ svg { width: 1.1rem; height: 1.1rem; }
   display: block;
   margin-top: 5px;
   color: var(--primary-strong);
-  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
-  font-weight: 900;
+  font-size: var(--brand-subtitle-size);
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .header-controls {
@@ -258,6 +234,11 @@ svg { width: 1.1rem; height: 1.1rem; }
 .reset-button:focus-visible {
   color: var(--primary-strong);
   border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+}
+
+/* Keep editable controls at least 16px to prevent iOS focus zoom. */
+input, select, textarea {
+  font-size: max(16px, 1rem);
 }
 
 input {
@@ -1404,6 +1385,64 @@ tr.matched td {
   width: 100%;
 }
 
+.download-creating-dialog {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.download-creating-dialog h2 {
+  margin: 0;
+}
+
+.download-spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid var(--primary-faint);
+  border-top-color: var(--primary);
+  border-radius: 999px;
+  animation: spin 0.8s linear infinite;
+}
+
+.download-ready-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: white;
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.download-warning {
+  display: grid;
+  gap: 8px;
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.download-warning p {
+  margin: 0;
+}
+
+.download-ready-button {
+  margin-top: 8px;
+}
+
+.download-ready-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .dialog-close {
   position: absolute;
   top: 10px;
@@ -1486,11 +1525,6 @@ tr.matched td {
 
   .brand {
     gap: 12px;
-  }
-
-  .brand-icon {
-    width: 58px;
-    height: 58px;
   }
 
   .header-controls {
@@ -1628,3 +1662,98 @@ tr.matched td {
     flex-direction: column;
   }
 }
+
+/* A year is a self-contained card on phones and tablets. */
+@media (max-width: 1024px) {
+  .table-wrap {
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .table-wrap table {
+    display: block;
+    min-width: 0;
+  }
+
+  .table-wrap thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .table-wrap tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  .table-wrap tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--surface);
+  }
+
+  .table-wrap tr.matched {
+    background: color-mix(in srgb, var(--primary-soft) 55%, var(--surface));
+    border-color: var(--primary);
+  }
+
+  .table-wrap td {
+    min-width: 0;
+    padding: 12px 0 0;
+    border: 0;
+    background: transparent;
+    overflow-wrap: anywhere;
+  }
+
+  .table-wrap td[data-label] {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: baseline;
+  }
+
+  .table-wrap td[data-label]::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 650;
+  }
+
+  .table-wrap .result-year {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 0 0 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 1.25rem;
+    font-weight: 850;
+  }
+
+  .table-wrap .result-status {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0 0 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    align-content: center;
+    font-size: 0.85rem;
+  }
+
+  .table-wrap .status { min-width: 0; }
+  .table-wrap .status svg { flex-shrink: 0; }
+  .table-wrap .expand-row { display: block; padding: 0; border: 0; background: none; }
+  .table-wrap .expand-row td { display: block; padding: 0; }
+  .table-wrap .expand-button { width: 100%; padding: 14px; }
+}
+
+@media (max-width: 620px) {
+  .table-section { padding: 18px 16px; }
+}
+
+.setting-select { font-size: max(16px, 1rem); }

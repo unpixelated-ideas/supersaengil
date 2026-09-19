@@ -36,9 +36,14 @@ const state = {
   downloadEndYear: "",
   downloadMaxYear: "",
   downloadHonorificBirthday: false,
+  downloadCreating: false,
+  downloadReady: false,
+  downloadCreatingCount: 0,
   copyMessage: "",
   expanded: false
 };
+
+let downloadTimer = null;
 
 function preferredLanguage() {
   const saved = localStorage.getItem(storageKeys.lang);
@@ -125,12 +130,6 @@ function render() {
   app.innerHTML = `
     <div class="app-background" aria-hidden="true"></div>
     <div class="page">
-      <div class="decor" aria-hidden="true">
-        <span class="sparkle sparkle-a"></span>
-        <span class="sparkle sparkle-b"></span>
-        <span class="sparkle sparkle-c"></span>
-        <span class="sparkle sparkle-d"></span>
-      </div>
       <header class="topbar">
         <div class="brand">
           <span class="brand-icon" aria-label="${t("iconLogo")}">${brandIcon()}</span>
@@ -347,8 +346,8 @@ function monthTypeControl(name = "isLeapMonth", value = state.fields.isLeapMonth
 
 function infoSectionTemplate() {
   const cards = [
-    { iconName: "cake", tone: "lavender", title: t("infoCard1Title"), body: t("infoCard1Body") },
-    { iconName: "calendarStar", tone: "green", title: t("infoCard2Title"), body: t("infoCard2Body") },
+    { iconName: "sunMoon", tone: "lavender", title: t("infoCard1Title"), body: t("infoCard1Body") },
+    { iconName: "calendarForward", tone: "green", title: t("infoCard2Title"), body: t("infoCard2Body") },
     { iconName: "gift", tone: "coral", title: t("infoCard3Title"), body: t("infoCard3Body") }
   ];
   return `
@@ -403,6 +402,7 @@ function passwordModalTemplate() {
 }
 
 function downloadModalTemplate() {
+  if (state.downloadCreating) return downloadCreatingTemplate();
   const bounds = getDownloadBounds();
   const startYear = Number(state.downloadStartYear);
   const endYear = Number(state.downloadEndYear);
@@ -473,6 +473,35 @@ function downloadModalTemplate() {
           </div>
           <button class="primary-button password-unlock" type="submit">${t("downloadCalendar")}</button>
         </form>
+      </dialog>
+    </div>
+  `;
+}
+
+function downloadCreatingTemplate() {
+  const title = state.downloadReady ? t("downloadReadyTitle") : t("downloadCreatingTitle");
+  const body = state.downloadReady ? t("downloadReadyBody") : t("downloadCreatingBody");
+  const countText = t("downloadWarningCount").replace(
+    "{count}",
+    String(state.downloadCreatingCount)
+  );
+
+  return `
+    <div class="modal-backdrop" role="presentation">
+      <dialog class="password-dialog download-dialog download-creating-dialog" open aria-labelledby="downloadCreatingTitle">
+        <button type="button" class="dialog-close" data-close-download aria-label="${escapeAttr(t("close"))}">
+          ${icon("x")}
+        </button>
+        ${state.downloadReady ? `<div class="download-ready-icon" aria-hidden="true">${icon("check")}</div>` : `<div class="download-spinner" aria-hidden="true"></div>`}
+        <h2 id="downloadCreatingTitle">${title}</h2>
+        <p class="dialog-help">${body}</p>
+        <div class="download-warning">
+          <p>${countText}</p>
+          <p>${t("downloadWarningManual")}</p>
+        </div>
+        <button type="button" class="primary-button download-ready-button" data-confirm-download ${state.downloadReady ? "" : "disabled"}>
+          ${t("downloadCalendar")}
+        </button>
       </dialog>
     </div>
   `;
@@ -678,7 +707,7 @@ function reverseResultsTemplate() {
 function downloadButtonTemplate(kind) {
   return `
     <button type="button" class="download-button" data-download-ics="${kind}" aria-label="${escapeAttr(t("downloadCalendar"))}" title="${escapeAttr(t("downloadCalendar"))}">
-      ${icon("download")}
+      ${icon("calendarPlus")}
     </button>
   `;
 }
@@ -776,11 +805,11 @@ function reverseExpandRow(omitted) {
 function reverseTableRow(row) {
   return `
     <tr class="${row.isMatch ? "matched" : ""}">
-      <td>${formatYear(row.year, state.lang)}</td>
-      <td>${row.solarBirthday ? formatIsoDate(row.solarBirthday) : `<span class="muted">${t("missing")}</span>`}</td>
-      <td>${row.recurrentSolar ? formatSolar(row.recurrentSolar, state.lang, false) : `<span class="muted">${t("missing")}</span>`}</td>
-      <td>${row.lunarBirthday ? formatLunar(row.lunarBirthday, state.lang, false) : `<span class="muted">${t("missing")}</span>`}</td>
-      <td>${statusCell(row)}</td>
+      <td class="result-year">${formatYear(row.year, state.lang)}</td>
+      <td data-label="${escapeAttr(t("solarBirthDate"))}">${row.solarBirthday ? formatIsoDate(row.solarBirthday) : `<span class="muted">${t("missing")}</span>`}</td>
+      <td data-label="${escapeAttr(t("gregorianLunarBirthday"))}">${row.recurrentSolar ? formatSolar(row.recurrentSolar, state.lang, false) : `<span class="muted">${t("missing")}</span>`}</td>
+      <td data-label="${escapeAttr(t("lunarBirthDate"))}">${row.lunarBirthday ? formatLunar(row.lunarBirthday, state.lang, false) : `<span class="muted">${t("missing")}</span>`}</td>
+      <td class="result-status">${statusCell(row)}</td>
     </tr>
   `;
 }
@@ -788,11 +817,11 @@ function reverseTableRow(row) {
 function tableRow(row) {
   return `
     <tr class="${row.isMatch ? "matched" : ""}">
-      <td>${formatYear(row.year, state.lang)}</td>
-      <td>${formatSolar(row.solarBirthday, state.lang, false)}</td>
-      <td>${row.recurrentSolar ? formatSolar(row.recurrentSolar, state.lang, false) : `<span class="muted">${t("missing")}</span>`}</td>
-      <td>${formatLunar(row.lunarBirthday, state.lang, false)}</td>
-      <td>${statusCell(row)}</td>
+      <td class="result-year">${formatYear(row.year, state.lang)}</td>
+      <td data-label="${escapeAttr(t("solarBirthday"))}">${formatSolar(row.solarBirthday, state.lang, false)}</td>
+      <td data-label="${escapeAttr(t("gregorianLunarBirthday"))}">${row.recurrentSolar ? formatSolar(row.recurrentSolar, state.lang, false) : `<span class="muted">${t("missing")}</span>`}</td>
+      <td data-label="${escapeAttr(t("lunarBirthday"))}">${formatLunar(row.lunarBirthday, state.lang, false)}</td>
+      <td class="result-status">${statusCell(row)}</td>
     </tr>
   `;
 }
@@ -920,7 +949,7 @@ function bindEvents() {
       state.downloadName = String(form.get("downloadName") || "").trim();
       state.downloadHonorificBirthday = form.get("downloadBirthdayTerm") === "honorific";
       setDownloadYears(form.get("downloadStartYear") || state.downloadStartYear, form.get("downloadEndYear") || state.downloadEndYear);
-      downloadCalendar();
+      startCalendarDownload();
     });
   }
 
@@ -934,6 +963,10 @@ function bindEvents() {
       render();
     });
   }
+
+  document.querySelector("[data-confirm-download]")?.addEventListener("click", () => {
+    if (state.downloadReady) downloadCalendar();
+  });
 
   const formElement = document.querySelector("#birthdayForm");
   if (formElement) {
@@ -1118,6 +1151,10 @@ function unlockReverseSearch(value) {
 }
 
 function resetInternalSearch() {
+  if (downloadTimer) {
+    window.clearTimeout(downloadTimer);
+    downloadTimer = null;
+  }
   state.reverseUnlocked = false;
   state.passwordModalOpen = false;
   state.password = "";
@@ -1138,6 +1175,9 @@ function resetInternalSearch() {
   state.downloadEndYear = "";
   state.downloadMaxYear = "";
   state.downloadHonorificBirthday = false;
+  state.downloadCreating = false;
+  state.downloadReady = false;
+  state.downloadCreatingCount = 0;
   state.copyMessage = "";
   state.expanded = false;
   localStorage.removeItem(storageKeys.reverseUnlocked);
@@ -1146,6 +1186,10 @@ function resetInternalSearch() {
 }
 
 function resetSearch() {
+  if (downloadTimer) {
+    window.clearTimeout(downloadTimer);
+    downloadTimer = null;
+  }
   state.mode = "solar";
   state.searchMode = "normal";
   state.reverseMode = "solar";
@@ -1165,6 +1209,9 @@ function resetSearch() {
   state.downloadEndYear = "";
   state.downloadMaxYear = "";
   state.downloadHonorificBirthday = false;
+  state.downloadCreating = false;
+  state.downloadReady = false;
+  state.downloadCreatingCount = 0;
   state.copyMessage = "";
   state.expanded = false;
   localStorage.setItem(storageKeys.mode, state.mode);
@@ -1247,6 +1294,10 @@ function openDownloadModal(kind) {
 }
 
 function closeDownloadModal() {
+  if (downloadTimer) {
+    window.clearTimeout(downloadTimer);
+    downloadTimer = null;
+  }
   state.downloadModalOpen = false;
   state.downloadKind = "normal";
   state.downloadName = "";
@@ -1254,6 +1305,23 @@ function closeDownloadModal() {
   state.downloadEndYear = "";
   state.downloadMaxYear = "";
   state.downloadHonorificBirthday = false;
+  state.downloadCreating = false;
+  state.downloadReady = false;
+  state.downloadCreatingCount = 0;
+}
+
+function startCalendarDownload() {
+  const startYear = Number(state.downloadStartYear) || getDownloadBounds().startYear;
+  const endYear = Number(state.downloadEndYear) || getDownloadBounds().maxYear;
+  state.downloadCreating = true;
+  state.downloadReady = false;
+  state.downloadCreatingCount = getDownloadEventCount(state.downloadKind, startYear, endYear);
+  render();
+  downloadTimer = window.setTimeout(() => {
+    downloadTimer = null;
+    state.downloadReady = true;
+    render();
+  }, 1500);
 }
 
 function downloadCalendar() {
@@ -1405,9 +1473,12 @@ function brandIcon() {
 
 function icon(name) {
   const paths = {
+    sunMoon: '<circle cx="6.5" cy="6.5" r="2.5"/><path d="M6.5 1.5v1M1.5 6.5h1M3 3l.7.7M10 3l-.7.7M3 10l.7-.7"/><path d="M17 8a5 5 0 0 0 5 8 7 7 0 1 1-5-8z"/>',
+    calendarForward: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M7 15.5h10M14 12.5l3 3-3 3"/>',
     sparkle: '<path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>',
     calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+    calendarPlus: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M12 14v5M9.5 16.5h5"/>',
     calendarStar: '<rect x="3" y="5" width="16" height="16" rx="2"/><path d="M15 3v4M7 3v4M3 10h16"/><path d="M18.4 13.4l.9 1.8 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3.9-1.8z"/>',
     cake: '<path d="M7 21h10"/><path d="M6 17h12v4H6z"/><path d="M8 13h8a3 3 0 0 1 3 3v1H5v-1a3 3 0 0 1 3-3z"/><path d="M12 3v5"/><path d="M10.5 6.5L12 8l1.5-1.5"/>',
     clock: '<circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/><path d="M4 4l2.2 2.2M20 4l-2.2 2.2"/>',
