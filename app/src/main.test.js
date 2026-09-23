@@ -1,7 +1,16 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 let dark = false;
 const listeners = new Set();
+const windowListeners = [];
+const originalAddEventListener = window.addEventListener.bind(window);
+
+afterEach(() => {
+  for (const [type, callback, options] of windowListeners.splice(0)) {
+    window.removeEventListener(type, callback, options);
+  }
+  vi.restoreAllMocks();
+});
 
 function installDom(url = "http://localhost/", languages = ["ko-KR"]) {
   document.body.innerHTML = '<div id="app"></div>';
@@ -51,16 +60,20 @@ async function loadApp() {
 
 beforeEach(() => {
   vi.resetModules();
+  vi.spyOn(window, "addEventListener").mockImplementation((type, callback, options) => {
+    windowListeners.push([type, callback, options]);
+    originalAddEventListener(type, callback, options);
+  });
   installDom();
 });
 
 describe("Super Saengil interface", () => {
-  it("uses English when the browser language is English and no language preference is saved", async () => {
+  it("uses Korean at the root even when the browser language is English", async () => {
     installDom("http://localhost/", ["en-US"]);
     await loadApp();
 
-    expect(document.documentElement.lang).toBe("en");
-    expect(document.body.textContent).toContain("Check dates");
+    expect(document.documentElement.lang).toBe("ko");
+    expect(document.body.textContent).toContain("확인하기");
   });
 
   it("prioritizes Korean when Korean appears anywhere in the browser language list", async () => {
@@ -79,13 +92,13 @@ describe("Super Saengil interface", () => {
     expect(document.body.textContent).toContain("확인하기");
   });
 
-  it("keeps a saved language preference ahead of browser languages", async () => {
+  it("uses the route ahead of a saved language preference", async () => {
     installDom("http://localhost/", ["ko-KR"]);
     localStorage.setItem("super-saengil-language", "en");
     await loadApp();
 
-    expect(document.documentElement.lang).toBe("en");
-    expect(document.body.textContent).toContain("Check dates");
+    expect(document.documentElement.lang).toBe("ko");
+    expect(document.body.textContent).toContain("확인하기");
   });
 
   it("switches languages and persists the choice", async () => {
@@ -120,7 +133,7 @@ describe("Super Saengil interface", () => {
 
     expect(link).toBeTruthy();
     expect(link.textContent).toBe("이용약관");
-    expect(link.getAttribute("href")).toBe("terms/index.html");
+    expect(link.getAttribute("href")).toBe("/terms/");
 
     document.querySelector('[data-lang="en"]').click();
     const englishLink = [...document.querySelectorAll(".site-footer a")].find((footerLink) => footerLink.textContent.includes("Terms"));
@@ -134,7 +147,7 @@ describe("Super Saengil interface", () => {
 
     expect(link).toBeTruthy();
     expect(link.textContent).toBe("업데이트 로그");
-    expect(link.getAttribute("href")).toBe("updates/index.html");
+    expect(link.getAttribute("href")).toBe("/updates/");
 
     document.querySelector('[data-lang="en"]').click();
     const englishLink = [...document.querySelectorAll(".site-footer a")].find((footerLink) => footerLink.textContent.includes("Update"));
@@ -168,7 +181,7 @@ describe("Super Saengil interface", () => {
     expect(document.body.textContent).toContain("10. 준거법");
     expect(document.body.textContent).not.toContain("Terms of Use");
     expect(document.querySelector(".back-link").textContent).toContain("슈퍼생일로 돌아가기");
-    expect(document.querySelector('.legal-body a[href="../privacy/index.html"]').textContent).toBe("개인정보 처리방침");
+    expect(document.querySelector('.legal-body a[href="/privacy/"]').textContent).toBe("개인정보 처리방침");
     expect(document.title).toBe("이용약관 · 슈퍼생일");
 
     document.querySelector('[data-lang="en"]').click();
@@ -177,8 +190,8 @@ describe("Super Saengil interface", () => {
     expect(document.body.textContent).toContain("10. Governing Law");
     expect(document.body.textContent).not.toContain("10. 준거법");
     expect(document.querySelector(".back-link").textContent).toContain("Back to Super Saengil");
-    expect(document.querySelector('.legal-body a[href="../privacy/index.html"]').textContent).toBe("Privacy Policy");
-    expect(document.title).toBe("Terms of Use · 슈퍼생일");
+    expect(document.querySelector('.legal-body a[href="/en/privacy/"]').textContent).toBe("Privacy Policy");
+    expect(document.title).toBe("Terms of Use · Super Saengil");
   });
 
   it("renders the Update Log page directly and switches languages there", async () => {
@@ -186,24 +199,24 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 9월 18일");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 9월 22일");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
     expect(document.body.textContent).toContain("모바일과 태블릿에서 더 편하게 사용할 수 있도록 화면을 최적화했습니다.");
     expect(document.body.textContent).not.toContain("Update Log");
-    expect(document.querySelector(".back-link").getAttribute("href")).toBe("../index.html");
-    expect(document.querySelector(".brand-image").getAttribute("src")).toBe("../logo.png");
+    expect(document.querySelector(".back-link").getAttribute("href")).toBe("/");
+    expect(document.querySelector(".brand-image").getAttribute("src")).toBe("/logo.png");
     expect(document.title).toBe("업데이트 로그 · 슈퍼생일");
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: September 18, 2026");
+    expect(document.body.textContent).toContain("Last updated: September 22, 2026");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("August 26, 2026");
     expect(document.body.textContent).toContain("Optimized the experience for mobile and tablet users.");
     expect(document.body.textContent).not.toContain("업데이트 로그");
-    expect(document.title).toBe("Update Log · 슈퍼생일");
+    expect(document.title).toBe("Update Log · Super Saengil");
   });
 
   it("renders the History page directly with inline citation links but no homepage link", async () => {
@@ -214,18 +227,18 @@ describe("Super Saengil interface", () => {
     expect(document.body.textContent).toContain("중국에서는 적어도 기원전 1300년경부터");
     expect(document.body.textContent).toContain("“슈퍼생일,” 또는 “Super Birthday”");
     expect(document.title).toBe("역사 · 슈퍼생일");
-    expect(document.querySelector(".back-link").getAttribute("href")).toBe("../index.html");
+    expect(document.querySelector(".back-link").getAttribute("href")).toBe("/");
     expect(document.querySelector('.legal-body a[href="https://contents.history.go.kr/mobile/nh/view.do?levelId=nh_027_0020_0020_0050_0010"]').textContent).toBe("한양, 오늘날의 서울");
     expect(document.querySelector('.legal-body a[href="https://aa.usno.navy.mil/faq/leap_years"]').textContent).toBe("400으로 나누어떨어질 때만");
     expect(document.body.textContent).not.toContain("[1]");
     const historyFooterLink = document.querySelector(".site-footer a:first-child");
     expect(historyFooterLink).toBeTruthy();
     expect(historyFooterLink.textContent).toBe("음력 알아보기");
-    expect(historyFooterLink.getAttribute("href")).toBe("../history/index.html");
+    expect(historyFooterLink.getAttribute("href")).toBe("/history/");
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("History");
-    expect(document.body.textContent).toContain("People in China have used lunisolar calendars");
+    expect(document.body.textContent).toContain("People in China have used lunar calendars");
     expect(document.body.textContent).toContain("A “super saengil”");
     expect(document.querySelector('.legal-body a[href="https://contents.history.go.kr/mobile/nh/view.do?levelId=nh_027_0020_0020_0050_0010"]').textContent).toBe("Hanyang, modern-day Seoul");
     expect(document.querySelector('.legal-body a[href="https://aa.usno.navy.mil/faq/leap_years"]').textContent).toBe("divisible by 400");
@@ -236,7 +249,7 @@ describe("Super Saengil interface", () => {
     const homeHistoryFooterLink = document.querySelector(".site-footer a:first-child");
     expect(homeHistoryFooterLink).toBeTruthy();
     expect(homeHistoryFooterLink.textContent).toBe("음력 알아보기");
-    expect(homeHistoryFooterLink.getAttribute("href")).toBe("history/index.html");
+    expect(homeHistoryFooterLink.getAttribute("href")).toBe("/history/");
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector(".site-footer a:first-child").textContent).toBe("Lunar Calendar Explained");
   });
@@ -265,7 +278,7 @@ describe("Super Saengil interface", () => {
     honorific.click();
 
     expect(localStorage.getItem("super-saengil-birthday-term")).toBe("honorific");
-    expect(document.title).toBe("슈퍼생신 · Super Sangshin");
+    expect(document.title).toBe("슈퍼생일 · Super Saengil");
     expect(document.querySelector(".brand-title").textContent).toBe("슈퍼생신");
     expect(document.querySelector(".brand small").textContent).toBe("Super Sangshin");
     expect(document.querySelector("#birthdayFormTitle").textContent).toContain("양력 생신");
@@ -276,7 +289,7 @@ describe("Super Saengil interface", () => {
     document.querySelector('[data-lang="en"]').click();
 
     expect(document.querySelector('input[name="birthdayTerm"]')).toBeNull();
-    expect(document.title).toBe("슈퍼생일 · Super Saengil");
+    expect(document.title).toBe("Super Saengil · 슈퍼생일");
     expect(document.body.textContent).toContain("Solar Birthday");
     expect(document.body.textContent).toContain("Super Saengil");
   });
@@ -347,12 +360,12 @@ describe("Super Saengil interface", () => {
     await loadApp();
     const privacyLink = [...document.querySelectorAll(".site-footer a")].find((link) => link.textContent.includes("개인정보"));
     expect(privacyLink).toBeTruthy();
-    expect(privacyLink.getAttribute("href")).toBe("privacy/index.html");
+    expect(privacyLink.getAttribute("href")).toBe("/privacy/");
 
     document.querySelector('[data-lang="en"]').click();
     const englishPrivacyLink = [...document.querySelectorAll(".site-footer a")].find((link) => link.textContent.includes("Privacy"));
     expect(englishPrivacyLink).toBeTruthy();
-    expect(englishPrivacyLink.getAttribute("href")).toBe("privacy/index.html");
+    expect(englishPrivacyLink.getAttribute("href")).toBe("/en/privacy/");
   });
 
   it("renders the privacy policy route in Korean and returns home", async () => {
@@ -364,8 +377,8 @@ describe("Super Saengil interface", () => {
     expect(document.body.textContent).toContain("사용자의 기기에서 로컬로 처리됩니다");
     expect(document.body.textContent).toContain("localStorage");
     expect(document.body.textContent).not.toContain("Privacy Policy");
-    expect(document.querySelector(".back-link").getAttribute("href")).toBe("../index.html");
-    expect(document.querySelector(".brand-image").getAttribute("src")).toBe("../logo.png");
+    expect(document.querySelector(".back-link").getAttribute("href")).toBe("/");
+    expect(document.querySelector(".brand-image").getAttribute("src")).toBe("/logo.png");
   });
 
   it("switches the privacy policy language without a separate selector", async () => {
@@ -704,5 +717,65 @@ describe("Super Saengil interface", () => {
 
     expect(localStorage.getItem("super-saengil-reverse-unlocked")).toBeNull();
     expect(document.querySelector(".search-mode-control").textContent).toContain("역방향 검색");
+  });
+});
+
+describe('localized routing contract', () => {
+  for (const base of ['/', '/supersaengil/']) {
+    for (const lang of ['ko', 'en']) {
+      for (const page of ['', 'privacy', 'terms', 'updates', 'history']) {
+        const path = `${base}${lang === 'en' ? 'en/' : ''}${page ? `${page}/` : ''}`;
+        it(`initializes and links correctly at ${path}`, async () => {
+          installDom(`http://localhost${path}`, [lang === 'ko' ? 'en-US' : 'ko-KR']);
+          localStorage.setItem('super-saengil-language', lang === 'ko' ? 'en' : 'ko');
+          await loadApp();
+          const { translations } = await import('./translations.js');
+          expect(document.documentElement.lang).toBe(lang);
+          expect(document.title).toContain(page ? translations[lang][`${page}Title`] : translations[lang].appName);
+          expect(document.querySelector('.brand-image').getAttribute('src')).toBe(`${base}logo.png`);
+          for (const destination of ['privacy', 'terms', 'updates', 'history']) {
+            expect(document.querySelector(`.site-footer a[href="${base}${lang === 'en' ? 'en/' : ''}${destination}/"]`)).not.toBeNull();
+          }
+          const target = lang === 'ko' ? 'en' : 'ko';
+          document.querySelector(`[data-lang="${target}"]`).click();
+          expect(location.pathname).toBe(`${base}${target === 'en' ? 'en/' : ''}${page ? `${page}/` : ''}`);
+          expect(document.documentElement.lang).toBe(target);
+          expect(document.querySelector('link[rel="canonical"]').href).toBe(`https://unpixelated-ideas.github.io/supersaengil/${target === 'en' ? 'en/' : ''}${page ? `${page}/` : ''}`);
+        });
+      }
+    }
+  }
+
+  it('preserves birthday query, hash and result across mobile switching and refresh', async () => {
+    const suffix = '?calendar=solar&year=1988&month=8&day=18#results';
+    installDom(`http://localhost/${suffix}`);
+    await loadApp();
+    const select = document.querySelector('[data-lang-select]');
+    select.value = 'en';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(location.pathname + location.search + location.hash).toBe(`/en/${suffix}`);
+    expect(document.querySelector('#year').value).toBe('1988');
+    expect(document.body.textContent).toContain('1988');
+    await loadApp();
+    expect(document.documentElement.lang).toBe('en');
+    expect(document.querySelector('#year').value).toBe('1988');
+    expect(document.querySelector('meta[property="og:title"]').content).toBe('Super Saengil');
+  });
+
+  it('synchronizes language and metadata on browser back and forward', async () => {
+    await loadApp();
+    document.querySelector('[data-lang="en"]').click();
+    const navigate = (action) => new Promise((resolve) => {
+      window.addEventListener('popstate', resolve, { once: true });
+      history[action]();
+    });
+    await navigate('back');
+    expect(location.pathname).toBe('/');
+    expect(document.documentElement.lang).toBe('ko');
+    expect(document.querySelector('meta[property="og:title"]').content).toBe('슈퍼생일');
+    await navigate('forward');
+    expect(location.pathname).toBe('/en/');
+    expect(document.documentElement.lang).toBe('en');
+    expect(document.querySelector('meta[property="og:title"]').content).toBe('Super Saengil');
   });
 });

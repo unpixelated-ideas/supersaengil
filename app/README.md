@@ -54,3 +54,17 @@ The selected leap state is preserved. A leap-month birthday recurs only in years
 ## Known calendar limitations
 
 KASI/KARI-backed table conversion is used through 2050. Dates after that are astronomical rule calculations in Korea Standard Time rather than direct KASI API/table lookups. They are suitable for the requested forward search, but future official KASI publications should be preferred if they publish verified data beyond 2050.
+
+### Language routes and link previews
+
+The URL selects the language: `/` is Korean and `/en/` is English. Both
+support `privacy/`, `terms/`, `updates/`, and `history/`, under the same
+hosting base (production uses `/supersaengil/`). Language switching preserves
+the current page, query string, and hash; saved preferences do not override URLs.
+
+`src/routes.js` defines the route matrix and shared path helpers.
+`src/metadata.js` uses existing translations for metadata and owns the production
+URL. `scripts/inline-build.mjs` generates all ten static HTML entries from one
+Vite build, including localized canonical, hreflang, Open Graph, and Twitter
+metadata. Runtime navigation uses the same metadata configuration.
+The shared preview artwork is deployed from `public/link-preview.png`.

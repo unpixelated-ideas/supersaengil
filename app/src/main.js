@@ -1,4 +1,6 @@
 import "./styles.css";
+import { parseRoute, routePath } from "./routes.js";
+import { syncMetadata } from "./metadata.js";
 import { calculateMatches, calculateReverseMatches, getDisplayRows, isGregorianDate, lunarToSolar, MAX_YEAR, MIN_YEAR } from "./calendar.js";
 import { formatIsoDate, formatLunar, formatSolar, formatYear } from "./format.js";
 import { createBirthdayIcs, createReverseIcs, downloadTextFile } from "./ics.js";
@@ -13,7 +15,7 @@ const storageKeys = {
 };
 
 const state = {
-  lang: preferredLanguage(),
+  lang: parseRoute(location.pathname).lang,
   theme: localStorage.getItem(storageKeys.theme) || "system",
   mode: localStorage.getItem(storageKeys.mode) || "solar",
   birthdayTerm: localStorage.getItem(storageKeys.birthdayTerm) || "birthday",
@@ -44,22 +46,6 @@ const state = {
 };
 
 let downloadTimer = null;
-
-function preferredLanguage() {
-  const saved = localStorage.getItem(storageKeys.lang);
-  if (saved === "ko" || saved === "en") return saved;
-
-  const browserLanguages = [
-    ...(navigator.languages || []),
-    navigator.language
-  ]
-    .filter(Boolean)
-    .map((language) => String(language).toLowerCase().split("-")[0]);
-
-  if (browserLanguages.includes("ko")) return "ko";
-  if (browserLanguages.includes("en")) return "en";
-  return "ko";
-}
 
 const app = document.querySelector("#app");
 const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -120,13 +106,13 @@ function officialAppSubtitle() {
 }
 
 function render() {
-  document.documentElement.lang = state.lang;
+  state.lang = parseRoute(location.pathname).lang;
+  syncMetadata(parseRoute(location.pathname));
   const isReverse = state.reverseUnlocked && state.searchMode === "reverse";
   const legalPage = currentLegalPage();
-  const legalTitle = legalPage === "privacy" ? rawT("privacyTitle") : legalPage === "terms" ? rawT("termsTitle") : legalPage === "history" ? rawT("historyTitle") : rawT("updatesTitle");
   const headerAppName = legalPage === "privacy" || legalPage === "terms" ? officialAppName() : appName();
   const headerAppSubtitle = legalPage === "privacy" || legalPage === "terms" ? officialAppSubtitle() : appSubtitle();
-  document.title = legalPage ? `${legalTitle} · ${officialAppName()}` : `${appName()} · ${appSubtitle()}`;
+
   app.innerHTML = `
     <div class="app-background" aria-hidden="true"></div>
     <div class="page">
@@ -841,9 +827,7 @@ function bindEvents() {
 
   document.querySelectorAll("[data-lang]").forEach((button) => {
     button.addEventListener("click", () => {
-      state.lang = button.dataset.lang;
-      localStorage.setItem(storageKeys.lang, state.lang);
-      render();
+      switchLanguage(button.dataset.lang);
     });
   });
 
@@ -866,9 +850,7 @@ function bindEvents() {
   });
 
   document.querySelector("[data-lang-select]")?.addEventListener("change", (event) => {
-    state.lang = event.currentTarget.value;
-    localStorage.setItem(storageKeys.lang, state.lang);
-    render();
+    switchLanguage(event.currentTarget.value);
   });
 
   document.querySelector("[data-appearance-select]")?.addEventListener("change", (event) => {
@@ -1218,40 +1200,37 @@ function resetSearch() {
   history.replaceState(null, "", location.pathname);
 }
 
+function switchLanguage(lang) {
+  const route = parseRoute(location.pathname);
+  const path = routePath({ ...route, lang });
+  if (path !== location.pathname) history.pushState(null, "", path + location.search + location.hash);
+  localStorage.setItem(storageKeys.lang, lang);
+  render();
+}
+
 function currentLegalPage() {
-  if (/\/privacy\/?(index\.html)?$/.test(location.pathname)) return "privacy";
-  if (/\/terms\/?(index\.html)?$/.test(location.pathname)) return "terms";
-  if (/\/updates\/?(index\.html)?$/.test(location.pathname)) return "updates";
-  if (/\/history\/?(index\.html)?$/.test(location.pathname)) return "history";
-  return "";
+  return parseRoute(location.pathname).page;
 }
 
 function assetUrl(filename) {
-  return currentLegalPage() ? `../${filename}` : filename;
+  return parseRoute(location.pathname).basePath + filename;
 }
 
-function privacyHref() {
-  return currentLegalPage() ? "../privacy/index.html" : "privacy/index.html";
+function pageHref(page = "") {
+  return routePath({ ...parseRoute(location.pathname), page });
 }
 
-function termsHref() {
-  return currentLegalPage() ? "../terms/index.html" : "terms/index.html";
-}
-
-function updatesHref() {
-  return currentLegalPage() ? "../updates/index.html" : "updates/index.html";
-}
-
-function historyHref() {
-  return currentLegalPage() ? "../history/index.html" : "history/index.html";
-}
+function privacyHref() { return pageHref("privacy"); }
+function termsHref() { return pageHref("terms"); }
+function updatesHref() { return pageHref("updates"); }
+function historyHref() { return pageHref("history"); }
 
 function feedbackHref() {
   return state.lang === "en" ? "https://forms.gle/a3MwRuEbXrjJtroo8" : "https://forms.gle/xzdA9z1RYmiFkb1L9";
 }
 
 function homeHref() {
-  return currentLegalPage() ? "../index.html" : "index.html";
+  return pageHref();
 }
 
 function isAcceptedPassword(value) {

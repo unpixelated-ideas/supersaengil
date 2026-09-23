@@ -165,20 +165,31 @@ export const translations = {
     updatesLink: "업데이트 로그",
     feedbackLink: "피드백",
     updatesTitle: "업데이트 로그",
-    updatesUpdated: "최종 업데이트: 2026년 9월 18일",
+    updatesUpdated: "최종 업데이트: 2026년 9월 22일",
     updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
     historyTitle: "역사",
+    historyDescription: "한국의 전통 음력의 역사와 음력의 원리를 알아보세요.",
     historyBody: [
-      "중국에서는 적어도 기원전 1300년경부터 <a href=\"https://www.cits.net/china-travel-guide/chinese-lunar-calendar-wisdom-of-ancestors.html\" target=\"_blank\" rel=\"noopener noreferrer\">태음태양력</a>을 사용해 왔습니다. 중국의 역법 체계는 이후 한반도로 전해졌습니다. 한국에서 중국식 태음태양력을 처음 사용하기 시작한 정확한 시기는 알 수 없지만, 554년에는 <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">역박사가 일본에 파견될</a> 만큼 한국의 역법 지식이 이미 발전해 있었습니다. 조선 세종 때인 1442년에는 한국 천문학자들이 중국과 다른 지역의 천문 계산법을 조선의 조건에 맞게 조정해 <a href=\"https://contents.history.go.kr/mobile/nh/view.do?levelId=nh_027_0020_0020_0050_0010\" target=\"_blank\" rel=\"noopener noreferrer\">한양, 오늘날의 서울</a>을 지리적 기준으로 삼았고, 중국 기준 계산에만 의존하지 않았습니다.",
-      "중국과 한국의 태음태양력은 평년에 12개월을 두며, 각 달은 29일 또는 30일입니다. 달의 길이는 고정되어 있지 않고 달의 주기에 따라 정해집니다. 29일인 달은 소월(小月), 30일인 달은 <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">대월(大月)</a>이라고 합니다.",
+      "중국에서는 적어도 기원전 1300년경부터 <a href=\"https://www.cits.net/china-travel-guide/chinese-lunar-calendar-wisdom-of-ancestors.html\" target=\"_blank\" rel=\"noopener noreferrer\">음력</a>을 사용해 왔습니다. 중국의 역법 체계는 이후 한반도로 전해졌지만, 한국에서 중국식 음력을 처음 사용하기 시작한 정확한 시기는 알 수 없습니다. 그러나 554년에는 <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">역박사가 일본에 파견될</a> 만큼 한국의 역법 지식이 이미 발전해 있었습니다. 조선 세종 때인 1442년에는 한국 천문학자들이 중국과 다른 지역의 천문 계산법을 조선의 조건에 맞게 조정해 <a href=\"https://contents.history.go.kr/mobile/nh/view.do?levelId=nh_027_0020_0020_0050_0010\" target=\"_blank\" rel=\"noopener noreferrer\">한양, 오늘날의 서울</a>을 지리적 기준으로 삼았고, 중국 기준 계산에만 의존하지 않았습니다.",
+      "중국과 한국의 음력은 평년에 12개월을 두며, 각 달은 29일 또는 30일입니다. 달의 길이는 고정되어 있지 않고 달의 주기에 따라 정해집니다. 29일인 달은 소월(小月), 30일인 달은 <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">대월(大月)</a>이라고 합니다.",
       "서유럽에서는 <a href=\"https://aa.usno.navy.mil/faq/calendars\" target=\"_blank\" rel=\"noopener noreferrer\">그레고리력</a>이 1582년 교황 그레고리오 13세에 의해 처음 도입되었습니다. 이 달력은 율리우스 카이사르의 이름을 딴 율리우스력을 대체했는데, 율리우스력은 태양년의 길이를 조금 길게 계산했습니다. 1582년 무렵에는 이 차이가 약 10일까지 쌓였습니다. 가톨릭 국가는 대체로 1582년부터 그레고리력을 먼저 받아들였고, 많은 개신교 국가는 훨씬 뒤에 도입했습니다. 영국과 훗날 미국이 되는 식민지들은 1752년에 그레고리력을 채택했으며, 그때에는 <a href=\"https://www.historic-uk.com/HistoryUK/HistoryofBritain/Give-us-our-eleven-days/\" target=\"_blank\" rel=\"noopener noreferrer\">11일을 건너뛰어야</a> 했습니다.",
-      "달력들은 윤달과 윤일을 다르게 처리합니다. 중국과 한국의 태음태양력은 19년에 약 7번 <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">윤달</a>을 더합니다. 윤달이 아닌 일반 달은 평달이라고 합니다. 그레고리력은 보통 4년에 한 번 2월 29일을 더하지만, 세기 연도는 <a href=\"https://aa.usno.navy.mil/faq/leap_years\" target=\"_blank\" rel=\"noopener noreferrer\">400으로 나누어떨어질 때만</a> 윤년입니다.",
+      "달력들은 윤달과 윤일을 다르게 처리합니다. 중국과 한국의 음력은 19년에 약 7번 <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">윤달</a>을 더합니다. 윤달이 아닌 일반 달은 평달이라고 합니다. 그레고리력은 보통 4년에 한 번 2월 29일을 더하지만, 세기 연도는 <a href=\"https://aa.usno.navy.mil/faq/leap_years\" target=\"_blank\" rel=\"noopener noreferrer\">400으로 나누어떨어질 때만</a> 윤년입니다.",
       "그래서 흔히 음력이라고 부르지만, 전통 한국 달력은 엄밀히 말해 <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">태음태양력</a>입니다. 달은 달의 위상을 따르고, 윤달은 달력을 태양년과 계절에 맞추기 위해 주기적으로 더해집니다. 이 사이트에서는 이해하기 쉽도록 음력이라는 표현을 사용합니다.",
       "조선 말기에는 고종 때의 개혁 속에서 <a href=\"https://contents.history.go.kr/id/tg_004_0070\" target=\"_blank\" rel=\"noopener noreferrer\">1896년 1월 1일</a>부터 그레고리력이 채택되었습니다. 중국은 청나라가 무너지고 중화민국이 세워진 뒤 <a href=\"https://blogs.loc.gov/law/2016/02/transition-from-the-lunar-calendar-to-the-western-calendar-under-chinese-law/\" target=\"_blank\" rel=\"noopener noreferrer\">1912년 1월 1일</a>에 그레고리력을 채택했습니다. 오늘날 중국, 홍콩, 마카오, 북한, 남한, 대만은 모두 민간 행정 목적으로 그레고리력을 사용하지만, 명절과 문화적 관습에서는 전통 태음태양력이 계속 쓰입니다.",
       "북한은 1997년부터 김일성의 출생연도인 1912년을 주체 1년으로 삼는 주체연호도 사용했습니다. 북한 관영 매체는 2024년 10월, 주체 113년부터 주체연호 사용을 중단하고 대체로 그레고리력 연도만 사용하고 있으며, <a href=\"https://en.yna.co.kr/view/AEN20241017006100315\" target=\"_blank\" rel=\"noopener noreferrer\">연합뉴스는</a> 주체연호가 사실상 쓰이지 않게 된 것으로 보인다고 보도했습니다.",
       "“슈퍼생일,” 또는 “Super Birthday”는 해마다 돌아오는 양력 생일과 음력 생일이 같은 날에 겹치는 해를 가리킵니다. 예를 들어 1988년 8월 18일에 양력으로 태어난 사람은 음력 7월 7일에 태어난 것입니다. 8월 18일과 음력 7월 7일이 다시 같은 날이 되는 다음 해는 2075년이며, 이때 그 사람은 자신의 “슈퍼생일”을 기념할 수 있습니다."
     ],
     updatesEntries: [
+      {
+        version: "v0.9.6",
+        date: "2026년 9월 22일",
+        dateIso: "2026-09-22",
+        items: [
+          "파비콘을 추가했습니다.",
+          "iMessage, Discord 등 지원되는 앱에서 공유한 링크가 깔끔하게 표시되도록 미리보기를 개선했습니다.",
+          "음력 알아보기 페이지의 내용을 일부 수정했습니다."
+        ]
+      },
       {
         version: "v0.9.5",
         date: "2026년 9월 18일",
@@ -511,20 +522,31 @@ export const translations = {
     updatesLink: "Update Log",
     feedbackLink: "Feedback",
     updatesTitle: "Update Log",
-    updatesUpdated: "Last updated: September 18, 2026",
+    updatesUpdated: "Last updated: September 22, 2026",
     updatesIntro: "A running record of major Super Saengil changes and improvements.",
     historyTitle: "History",
+    historyDescription: "Explore the history of Korea’s traditional lunar calendar and how the lunar calendar works.",
     historyBody: [
-      "People in China have used <a href=\"https://www.cits.net/china-travel-guide/chinese-lunar-calendar-wisdom-of-ancestors.html\" target=\"_blank\" rel=\"noopener noreferrer\">lunisolar calendars</a> since at least 1300 BCE. Chinese calendrical systems eventually spread to the Korean Peninsula. Although the date on which Koreans first started using the Chinese lunisolar calendar is unknown, Korean calendrical science was already sufficiently developed by 554 CE so that a <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">calendrical scholar was sent to Japan</a>. During the Joseon Dynasty in 1442, Korean astronomers adapted earlier Chinese and other astronomical methods to Korean conditions, using <a href=\"https://contents.history.go.kr/mobile/nh/view.do?levelId=nh_027_0020_0020_0050_0010\" target=\"_blank\" rel=\"noopener noreferrer\">Hanyang, modern-day Seoul</a>, as a geographical reference rather than relying exclusively on calculations made for China.",
-      "Both the Chinese and Korean lunisolar calendars have 12 months in a regular year, with each month containing either 29 or 30 days. Month lengths are not fixed, but rather determined by the lunar cycle. Months with 29 days are known as “small months” (소월, 小月), while months with 30 days are known as <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">“big months”</a> (대월, 大月).",
+      "People in China have used <a href=\"https://www.cits.net/china-travel-guide/chinese-lunar-calendar-wisdom-of-ancestors.html\" target=\"_blank\" rel=\"noopener noreferrer\">lunar calendars</a> since at least 1300 BCE. Chinese calendrical systems eventually spread to the Korean Peninsula, although the date on which Koreans first started using the Chinese lunar calendar is unknown. However, Korean calendrical science was already so sufficiently developed by 554 CE so that a <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">calendrical scholar was sent to Japan</a>. During the Joseon Dynasty in 1442, Korean astronomers adapted earlier Chinese and other astronomical methods to Korean conditions, using <a href=\"https://contents.history.go.kr/mobile/nh/view.do?levelId=nh_027_0020_0020_0050_0010\" target=\"_blank\" rel=\"noopener noreferrer\">Hanyang, modern-day Seoul</a>, as a geographical reference rather than relying exclusively on calculations made for China.",
+      "Both the Chinese and Korean lunar calendars have 12 months in a regular year, with each month containing either 29 or 30 days. Month lengths are not fixed, but rather determined by the lunar cycle. Months with 29 days are known as “small months” (소월, 小月), while months with 30 days are known as <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">“big months”</a> (대월, 大月).",
       "In Western Europe, the <a href=\"https://aa.usno.navy.mil/faq/calendars\" target=\"_blank\" rel=\"noopener noreferrer\">Gregorian solar calendar</a> was first introduced in 1582 under Pope Gregory XIII. It replaced the Julian calendar, named after Julius Caesar, which slightly overestimated the length of the solar year. By 1582, this discrepancy had accumulated to approximately 10 days. Catholic countries were generally the first to adopt the Gregorian calendar, beginning in 1582, while many Protestant countries adopted it considerably later. Great Britain and the colonies that would eventually become the United States adopted the Gregorian calendar in 1752, by which point <a href=\"https://www.historic-uk.com/HistoryUK/HistoryofBritain/Give-us-our-eleven-days/\" target=\"_blank\" rel=\"noopener noreferrer\">11 calendar days had to be omitted</a>.",
-      "The calendars handle “leap” time differently. The Chinese and Korean lunisolar calendars add an extra “<a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">leap month</a>” (윤달) approximately seven times every 19 years. Regular, non-leap months are known as “regular months” (평달). The Gregorian calendar generally adds an extra day, February 29, every four years, except that century years are not leap years unless they are <a href=\"https://aa.usno.navy.mil/faq/leap_years\" target=\"_blank\" rel=\"noopener noreferrer\">divisible by 400</a>.",
+      "The calendars handle “leap” time differently. The Chinese and Korean lunar calendars add an extra “<a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">leap month</a>” (윤달) approximately seven times every 19 years. Regular, non-leap months are known as “regular months” (평달). The Gregorian calendar generally adds an extra day, February 29, every four years, except that century years are not leap years unless they are <a href=\"https://aa.usno.navy.mil/faq/leap_years\" target=\"_blank\" rel=\"noopener noreferrer\">divisible by 400</a>.",
       "This means although commonly called a “lunar calendar,” the traditional Korean calendar is technically <a href=\"https://encykorea.aks.ac.kr/Article/E0013723\" target=\"_blank\" rel=\"noopener noreferrer\">lunisolar</a>: its months follow the phases of the Moon, while leap months are periodically added to keep the calendar aligned with the solar year and the seasons. We use “lunar calendar” here for ease of understanding.",
       "In the late Joseon Dynasty, Korea adopted the Gregorian calendar on <a href=\"https://contents.history.go.kr/id/tg_004_0070\" target=\"_blank\" rel=\"noopener noreferrer\">January 1, 1896</a>, as part of reforms under King Gojong. China adopted the Gregorian calendar on <a href=\"https://blogs.loc.gov/law/2016/02/transition-from-the-lunar-calendar-to-the-western-calendar-under-chinese-law/\" target=\"_blank\" rel=\"noopener noreferrer\">January 1, 1912</a>, following the establishment of the Republic of China and the fall of the Qing Dynasty. Today, China, Hong Kong, Macau, North Korea, South Korea, and Taiwan all use the Gregorian calendar for civil purposes, although traditional lunisolar calendars continue to be used for holidays and cultural observances.",
       "Since 1997, North Korea also used the Juche calendar, under which 1912, the birth year of Kim Il Sung, was Juche 1. North Korean state media ceased using Juche years in October 2024 (Juche 113) and now generally use Gregorian year numbers alone, and <a href=\"https://en.yna.co.kr/view/AEN20241017006100315\" target=\"_blank\" rel=\"noopener noreferrer\">it is believed</a> that the Juche calendar has fallen into disuse.",
       "A “super saengil” (슈퍼생일), or “super birthday,” describes a year in which a person’s recurring solar-calendar birthday and lunar-calendar birthday fall on the same day. For example, a person born on August 18, 1988 according to the Gregorian calendar was born on the seventh day of the seventh lunar month (음력 7월 7일). The next time that August 18 and lunar July 7 fall on the same day will be in 2075, allowing this person to celebrate their “super saengil.”"
     ],
     updatesEntries: [
+      {
+        version: "v0.9.6",
+        date: "September 22, 2026",
+        dateIso: "2026-09-22",
+        items: [
+          "Added a favicon.",
+          "Improved link previews for cleaner sharing in iMessage, Discord, and other supported apps.",
+          "Made minor content updates to the Lunar Calendar Explained page."
+        ]
+      },
       {
         version: "v0.9.5",
         date: "September 18, 2026",
