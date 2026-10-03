@@ -188,7 +188,17 @@ function normalFormTemplate() {
         ${tabButton("solar", "sun", t("solarTab"))}
         ${tabButton("lunar", "moon", t("lunarTab"))}
     </div>
-    <h1 id="birthdayFormTitle">${state.mode === "solar" ? t("solarTab") : t("lunarTab")}</h1>
+    <div class="birthday-heading">
+      <h1 id="birthdayFormTitle">${state.mode === "solar" ? t("solarTab") : t("lunarTab")}</h1>
+      ${state.mode === "solar" ? `
+        <div class="solar-picker">
+          <button type="button" class="calendar-picker-button" aria-label="${t("chooseSolarDate")}" title="${t("chooseSolarDate")}" aria-controls="solarDatePicker">
+            ${icon("calendar")}
+          </button>
+          <input id="solarDatePicker" class="visually-hidden" type="date" min="${MIN_YEAR}-01-01" max="${MAX_YEAR}-12-31" tabindex="-1" aria-label="${t("chooseSolarDate")}" />
+        </div>
+      ` : ""}
+    </div>
     <form id="birthdayForm" novalidate>
       <div class="field-grid ${state.mode === "lunar" ? "field-grid-lunar" : "field-grid-solar"}">
         ${numberField("year", t("birthYear"), MIN_YEAR, MAX_YEAR, t("yearPlaceholder"), state.fields.year)}
@@ -534,7 +544,16 @@ function historyPageTemplate() {
           <h1 id="legalTitle">${rawT("historyTitle")}</h1>
         </header>
         <div class="legal-body history-body">
-          ${rawT("historyBody").map((paragraph) => `<p>${paragraph}</p>`).join("")}
+          ${rawT("historySections").map((section, index) => {
+            const tag = section.kind === "note" ? "aside" : "section";
+            const treatment = section.kind === "note" ? " legal-note history-note" : section.kind === "conclusion" ? " history-conclusion" : "";
+            return `
+              <${tag} class="legal-section history-section${treatment}" aria-labelledby="historySection${index + 1}">
+                <h2 id="historySection${index + 1}">${section.title}</h2>
+                ${section.body.map((paragraph) => `<p>${paragraph}</p>`).join("")}
+              </${tag}>
+            `;
+          }).join("")}
         </div>
       </article>
     </main>
@@ -948,6 +967,32 @@ function bindEvents() {
 
   document.querySelector("[data-confirm-download]")?.addEventListener("click", () => {
     if (state.downloadReady) downloadCalendar();
+  });
+
+  const solarDatePicker = document.querySelector("#solarDatePicker");
+  document.querySelector(".calendar-picker-button")?.addEventListener("click", () => {
+    const values = ["year", "month", "day"].map((name) => Number(document.getElementById(name).value));
+    solarDatePicker.value = isGregorianDate(...values)
+      ? `${String(values[0]).padStart(4, "0")}-${String(values[1]).padStart(2, "0")}-${String(values[2]).padStart(2, "0")}`
+      : "";
+    try {
+      solarDatePicker.showPicker();
+    } catch {
+      // Keep a usable native date field when programmatic pickers are unavailable.
+      solarDatePicker.classList.remove("visually-hidden");
+      solarDatePicker.tabIndex = 0;
+      solarDatePicker.focus();
+    }
+  });
+  solarDatePicker?.addEventListener("change", () => {
+    if (!solarDatePicker.value || !solarDatePicker.validity.valid) return;
+    const values = solarDatePicker.value.split("-");
+    ["year", "month", "day"].forEach((name, index) => {
+      state.fields[name] = String(Number(values[index]));
+      document.getElementById(name).value = state.fields[name];
+    });
+    state.error = "";
+    document.querySelector("#formError").textContent = "";
   });
 
   const formElement = document.querySelector("#birthdayForm");

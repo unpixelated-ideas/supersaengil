@@ -199,7 +199,7 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 9월 22일");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 10월 2일");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
@@ -211,7 +211,7 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: September 22, 2026");
+    expect(document.body.textContent).toContain("Last updated: October 2, 2026");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("August 26, 2026");
     expect(document.body.textContent).toContain("Optimized the experience for mobile and tablet users.");
@@ -252,6 +252,37 @@ describe("Super Saengil interface", () => {
     expect(homeHistoryFooterLink.getAttribute("href")).toBe("/history/");
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector(".site-footer a:first-child").textContent).toBe("Lunar Calendar Explained");
+  });
+
+  it("picks a solar birthday without submitting and hides the picker on the lunar tab", async () => {
+    installDom("http://localhost/en/");
+    await loadApp();
+    const picker = document.querySelector("#solarDatePicker");
+    picker.showPicker = vi.fn();
+    document.querySelector("#year").value = "1988";
+    document.querySelector("#month").value = "8";
+    document.querySelector("#day").value = "18";
+    document.querySelector(".calendar-picker-button").click();
+    expect(picker.showPicker).toHaveBeenCalledOnce();
+    expect(picker.value).toBe("1988-08-18");
+    picker.value = "2000-02-29";
+    picker.dispatchEvent(new Event("change"));
+    expect(["year", "month", "day"].map((id) => document.getElementById(id).value)).toEqual(["2000", "2", "29"]);
+    expect(document.querySelector("#searchResults")).toBeNull();
+    document.querySelector('[data-lang="ko"]').click();
+    expect(document.querySelector(".calendar-picker-button").getAttribute("aria-label")).toBe("달력에서 양력 생일 선택");
+    expect(document.querySelector("#day").value).toBe("29");
+    document.querySelector('[data-mode="lunar"]').click();
+    expect(document.querySelector(".calendar-picker-button")).toBeNull();
+    expect(document.querySelector("#solarDatePicker")).toBeNull();
+  });
+
+  it("offers a visible date field when showPicker is unavailable", async () => {
+    await loadApp();
+    document.querySelector(".calendar-picker-button").click();
+    const picker = document.querySelector("#solarDatePicker");
+    expect(picker.classList.contains("visually-hidden")).toBe(false);
+    expect(document.activeElement).toBe(picker);
   });
 
   it("switches theme and persists the choice", async () => {

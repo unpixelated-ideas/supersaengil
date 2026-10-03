@@ -436,6 +436,46 @@ h1 {
   font-weight: 950;
 }
 
+.birthday-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.birthday-heading h1 { margin: 0; }
+
+.solar-picker { position: relative; }
+
+.calendar-picker-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  color: var(--primary-strong);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.calendar-picker-button:hover { background: var(--primary-soft); }
+
+.solar-picker input:not(.visually-hidden) {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1;
+  padding: 10px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
 .field-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(130px, 1fr)) auto;
@@ -905,6 +945,36 @@ h1 {
   color: var(--text);
   font-size: 1.18rem;
   font-weight: 950;
+}
+
+.history-body {
+  gap: 32px;
+}
+
+.history-section {
+  gap: 16px;
+  padding-top: 0;
+}
+
+.history-section h2 {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.history-note {
+  padding: 16px 18px;
+  gap: 10px;
+}
+
+.history-note h2 {
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.history-conclusion {
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
 }
 
 .update-log-body {
