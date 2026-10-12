@@ -1,0 +1,33 @@
+// Cultural content is deliberately independent of calendar calculations.
+const lunar = (id, en, ko, month, day, enDescription, koDescription, publicHoliday = false) => ({
+  id, en, ko, rule: 'lunar', month, day, publicHoliday,
+  description: { en: enDescription, ko: koDescription }
+});
+const seasonal = (id, en, ko, calculation, description, publicHoliday = false) => ({ id, en, ko, rule: id, calculation, description, publicHoliday });
+export const holidays = [
+  lunar('seollal', 'Lunar New Year', '설날', 1, 1, "One of Korea’s most important holidays, celebrated with family gatherings, ancestral rites, and traditional foods.", '가족이 모여 차례를 지내고 세배를 하며 떡국 등 명절 음식을 나누는 한국의 대표적인 명절입니다.', true),
+  lunar('daeboreum', 'First Full Moon Festival', '정월대보름', 1, 15, 'Celebrates the year’s first full moon, traditionally with rituals for health, prosperity, and a successful harvest.', '한 해의 첫 보름달을 맞아 건강과 풍요, 풍년을 기원하던 날입니다.'),
+  lunar('yeongdeung', 'Yeongdeung Day', '영등날', 2, 1, 'Marks the arrival of a traditional wind deity, especially significant in coastal and agricultural communities.', '바람을 다스리는 영등신을 맞이하던 날로, 어촌과 농촌에서 풍어와 풍년을 기원했습니다.'),
+  lunar('jungwajeol', 'Jungwajeol / Farm Workers’ Day', '중화절 (中和節) / 머슴날', 2, 1, 'Related traditions marking the agricultural season, including celebrations honoring farm workers.', '농사철의 시작을 알리고 머슴들의 노고를 위로하던 풍습과 관련된 날입니다.'),
+  lunar('samjinnal', 'Samjinnal', '삼짇날', 3, 3, 'A spring celebration associated with returning swallows, flower viewing, and outdoor activities.', '제비가 돌아온다고 여겼던 봄 명절로, 꽃놀이와 화전놀이 등을 즐겼습니다.'),
+  lunar('buddha', 'Buddha’s Birthday', '부처님오신날', 4, 8, 'Celebrates the birth of Buddha, commonly with lantern festivals and Buddhist ceremonies.', '부처의 탄생을 기념하는 날로, 연등을 밝히고 사찰에서 봉축 법회 등을 엽니다.', true),
+  lunar('dano', 'Dano Festival', '단오 (端午)', 5, 5, 'A traditional festival with wrestling, swinging, and seasonal customs intended to promote health.', '씨름과 그네뛰기, 창포물에 머리 감기 등 놀이와 건강을 기원하는 풍습이 전해지는 명절입니다.'),
+  lunar('yudu', 'Yudu Festival', '유두 (流頭)', 6, 15, 'A summer observance involving washing in flowing water and eating seasonal foods for purification and health.', '흐르는 물에 머리를 감고 몸을 씻으며 액운을 물리치고, 제철 음식을 나누던 여름 풍속입니다.'),
+  lunar('chilseok', 'Chilseok Festival', '칠석 (七夕)', 7, 7, 'Associated with the annual reunion of the legendary lovers Gyeonu and Jiknyeo, separated by the Milky Way.', '은하수를 사이에 둔 견우와 직녀가 일 년에 한 번 만난다는 전설이 전해지는 날입니다.'),
+  lunar('baekjung', 'Baekjung Festival', '백중 (百中)', 7, 15, 'An agricultural and Buddhist observance associated with honoring ancestors and celebrating the farming season.', '조상을 기리는 불교 의례와 농사일의 노고를 풀며 즐기던 농경 풍습이 함께 전해지는 날입니다.'),
+  lunar('chuseok', 'Chuseok / Harvest Festival', '추석 (秋夕) / 한가위', 8, 15, 'A major harvest holiday celebrated with family reunions, ancestral rites, and foods such as songpyeon rice cakes.', '가족이 모여 차례와 성묘를 하고 송편 등 음식을 나누며 수확의 기쁨을 함께하는 큰 명절입니다.', true),
+  lunar('jungyang', 'Double Ninth Festival', '중양절 (重陽節)', 9, 9, 'An autumn celebration traditionally associated with chrysanthemums, excursions, and seasonal foods.', '국화주와 국화전 등 계절 음식을 즐기고 산에 오르며 가을을 만끽하던 날입니다.'),
+  seasonal('sangdal', 'Sangdal Household Ritual', '상달고사', { en: 'During the 10th lunar month; no universally fixed date.', ko: '음력 10월 중 집안에서 정한 날로, 공통으로 정해진 날짜는 없습니다.' }, { en: 'Household ceremonies giving thanks for the harvest and seeking protection and good fortune.', ko: '수확에 감사하고 집안의 평안과 복을 빌며 올리던 가정 의례입니다.' }),
+  seasonal('eve', 'Lunar New Year’s Eve', '섣달그믐 / 제석 (除夕)', { en: 'The day before Lunar New Year: the final day of lunar month 12 (29th or 30th).', ko: '설날의 전날인 음력 12월의 마지막 날로, 29일 또는 30일입니다.' }, { en: 'The final day of the lunar year, traditionally spent preparing for Seollal and bidding farewell to the old year.', ko: '묵은해를 보내고 설을 맞을 준비를 하던 음력 한 해의 마지막 날입니다.' }, true),
+  seasonal('hansik', 'Hansik / Cold Food Festival', '한식 (寒食)', { en: '105 days after the previous winter solstice; the following day is counted as day 1.', ko: '지난해 동지 다음 날을 1일째로 세어 105일째 되는 날입니다.' }, { en: 'Historically one of Korea’s four major traditional holidays, associated with ancestral rites and tending graves.', ko: '예로부터 설날·단오·추석과 함께 4대 명절로 꼽혔으며, 제사를 지내고 조상의 묘를 돌보았습니다.' }),
+  seasonal('chobok', 'Chobok / First Bok Day', '초복 (初伏)', { en: 'Third Gyeong day (경일, 庚日; every 10 days) counting from the summer solstice (하지, 夏至), including that date if it is a Gyeong day.', ko: '하지(夏至)부터 세 번째 경일(庚日)입니다. 경일은 10일마다 돌아오며, 하지가 경일이면 그날부터 셉니다.' }, { en: 'Begins the traditional hottest period of summer, often observed with restorative foods such as samgyetang chicken soup.', ko: '삼복더위의 시작을 알리는 날로, 삼계탕 등 보양식을 먹으며 더위를 이기는 풍습이 있습니다.' }),
+  seasonal('jungbok', 'Jungbok / Middle Bok Day', '중복 (中伏)', { en: 'Fourth Gyeong day (경일, 庚日; every 10 days) counting from the summer solstice, including that date if it is a Gyeong day.', ko: '하지부터 네 번째 경일(庚日)로, 초복에서 10일 뒤입니다. 하지가 경일이면 그날부터 셉니다.' }, { en: 'The second of the three Bok days, traditionally associated with summer heat and nourishing foods.', ko: '삼복 가운데 두 번째 날로, 무더위 속에서 보양식을 나누며 기력을 보충하는 풍습이 있습니다.' }),
+  seasonal('malbok', 'Malbok / Final Bok Day', '말복 (末伏)', { en: 'First Gyeong day (경일, 庚日; every 10 days) on or after the start of autumn (입추, 立秋).', ko: '입추(立秋)부터 첫 번째 경일(庚日)입니다. 입추가 경일이면 그날이며, 중복과의 간격은 10일 또는 20일입니다.' }, { en: 'The final Bok day, marking the traditional conclusion of the hottest summer period.', ko: '삼복의 마지막 날로, 전통적으로 한여름 더위의 끝자락을 알리는 날입니다.' }),
+  seasonal('dongji', 'Dongji / Winter Solstice', '동지 (冬至)', { en: 'Astronomical winter solstice: the Sun’s apparent ecliptic longitude reaches 270°. Date in Korea Standard Time.', ko: '태양의 겉보기 황경이 270°에 이르는 순간을 한국 표준시로 환산한 날짜입니다.' }, { en: 'Marks the shortest day of the year, traditionally observed by eating red bean porridge (patjuk) to ward off misfortune.', ko: '일 년 중 낮이 가장 짧은 날로, 팥죽을 쑤어 먹으며 액운을 물리치던 풍습이 전해집니다.' }),
+  seasonal('nabil', 'Nabil / Year-End Sacrificial Day', '납일 (臘日)', { en: 'Third Mi day (미일, 未日; every 12 days) after the previous winter solstice, following the Joseon-era convention.', ko: '조선 시대의 기준에 따라 지난해 동지가 지난 뒤 세 번째 미일(未日)입니다. 미일은 12일마다 돌아옵니다.' }, { en: 'A historical year-end observance with sacrificial ceremonies and offerings to ancestors and deities.', ko: '한 해의 끝 무렵 조상과 여러 신에게 제물을 올리던 역사적인 세시풍속입니다.' })
+];
+export function calculationText(holiday, lang) {
+  if (holiday.calculation) return holiday.calculation[lang];
+  const ordinal = (n) => `${n}${n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th'}`;
+  return lang === 'ko' ? `음력 ${holiday.month}월 ${holiday.day}일 (평달)` : `${ordinal(holiday.day)} day of the ${ordinal(holiday.month)} lunar month (regular month).`;
+}

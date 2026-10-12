@@ -1,4 +1,5 @@
 import "./styles.css";
+import { holidayPageTemplate } from "./holiday-page.js";
 import { parseRoute, routePath } from "./routes.js";
 import { syncMetadata } from "./metadata.js";
 import { calculateMatches, calculateReverseMatches, getDisplayRows, isGregorianDate, lunarToSolar, MAX_YEAR, MIN_YEAR } from "./calendar.js";
@@ -42,7 +43,8 @@ const state = {
   downloadReady: false,
   downloadCreatingCount: 0,
   copyMessage: "",
-  expanded: false
+  expanded: false,
+  holidayYear: new Date().getFullYear()
 };
 
 let downloadTimer = null;
@@ -504,6 +506,7 @@ function downloadCreatingTemplate() {
 }
 
 function legalPageTemplate(page) {
+  if (page === "holidays") return holidayPageTemplate(state.lang, state.holidayYear, homeHref(), rawT("backToHome")) + siteFooterTemplate();
   if (page === "updates") return updateLogTemplate();
   if (page === "history") return historyPageTemplate();
 
@@ -615,6 +618,7 @@ function siteFooterTemplate() {
   return `
     <footer class="site-footer">
       <a href="${historyHref()}">${t("historyLink")}</a>
+      <a href="${pageHref("holidays")}">${t("holidaysTitle")}</a>
       <a href="${privacyHref()}">${t("privacyLink")}</a>
       <a href="${termsHref()}">${t("termsLink")}</a>
       <a href="${updatesHref()}">${t("updatesLink")}</a>
@@ -839,6 +843,14 @@ function statusCell(row) {
 }
 
 function bindEvents() {
+  app.querySelectorAll('[data-holiday-year]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const direction = button.dataset.holidayYear;
+      state.holidayYear = Math.max(MIN_YEAR, Math.min(MAX_YEAR, state.holidayYear + Number(direction)));
+      render();
+      app.querySelector(`[data-holiday-year="${direction}"]`)?.focus({ preventScroll: true });
+    });
+  });
   document.querySelector("[data-reset-search]")?.addEventListener("click", () => {
     resetSearch();
     render();

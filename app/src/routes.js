@@ -1,5 +1,5 @@
 export const languages = ['ko', 'en'];
-export const pages = ['', 'privacy', 'terms', 'updates', 'history'];
+export const pages = ['', 'privacy', 'terms', 'updates', 'history', 'holidays'];
 
 // Strip the supported route suffix; the remaining segments are the deployment base.
 // This also accepts the old explicit index.html links.

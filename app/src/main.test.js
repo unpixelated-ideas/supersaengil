@@ -199,11 +199,11 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 10월 2일");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 10월 11일");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
-    expect(document.body.textContent).toContain("모바일과 태블릿에서 더 편하게 사용할 수 있도록 화면을 최적화했습니다.");
+    expect(document.body.textContent).toContain("휴대전화와 태블릿에 맞게 화면을 최적화해 다양한 화면 크기에서 슈퍼생일을 더 편하게 이용할 수 있도록 했습니다.");
     expect(document.body.textContent).not.toContain("Update Log");
     expect(document.querySelector(".back-link").getAttribute("href")).toBe("/");
     expect(document.querySelector(".brand-image").getAttribute("src")).toBe("/logo.png");
@@ -211,10 +211,10 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: October 2, 2026");
+    expect(document.body.textContent).toContain("Last updated: October 11, 2026");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("August 26, 2026");
-    expect(document.body.textContent).toContain("Optimized the experience for mobile and tablet users.");
+    expect(document.body.textContent).toContain("Optimized the interface for phones and tablets, making Super Saengil more accessible across different screen sizes.");
     expect(document.body.textContent).not.toContain("업데이트 로그");
     expect(document.title).toBe("Update Log · Super Saengil");
   });
@@ -808,5 +808,29 @@ describe('localized routing contract', () => {
     expect(location.pathname).toBe('/en/');
     expect(document.documentElement.lang).toBe('en');
     expect(document.querySelector('meta[property="og:title"]').content).toBe('Super Saengil');
+  });
+});
+
+describe('Lunar Holidays page', () => {
+  it('renders all columns, preserves the selected year across language changes, and orders the footer', async () => {
+    installDom('http://localhost/en/holidays/');
+    await loadApp();
+    expect(document.querySelector('h1').textContent).toBe('Lunar Holidays');
+    expect(document.querySelectorAll('.holiday-table thead th')).toHaveLength(7);
+    expect(document.querySelectorAll('.holiday-table tbody tr')).toHaveLength(20);
+    expect(document.querySelectorAll('.holiday-item')).toHaveLength(20);
+    const year = new Date().getFullYear();
+    document.querySelector('[data-holiday-year="1"]').click();
+    expect(document.querySelector('#holidayYear').textContent).toBe(String(year + 1));
+    expect(document.activeElement.dataset.holidayYear).toBe('1');
+    document.querySelector('[data-lang="ko"]').click();
+    expect(location.pathname).toBe('/holidays/');
+    expect(document.querySelector('#holidayYear').textContent).toBe(`${year + 1}년`);
+    expect(document.querySelectorAll('.holiday-table thead th')).toHaveLength(6);
+    expect(document.querySelector('.holiday-table').textContent).not.toContain('Lunar New Year');
+    document.querySelector('[data-holiday-year="-1"]').click();
+    expect(document.querySelector('#holidayYear').textContent).toBe(`${year}년`);
+    expect([...document.querySelectorAll('.site-footer a')].slice(0, 3).map((a) => new URL(a.href).pathname)).toEqual(['/history/', '/holidays/', '/privacy/']);
+    expect(document.title).toContain('음력 명절');
   });
 });

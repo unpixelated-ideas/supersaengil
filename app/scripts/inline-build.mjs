@@ -34,7 +34,7 @@ for (const lang of languages) {
     const assetPrefix = depth ? "../".repeat(depth) : "./";
     const localized = template
       .replace('<html lang="ko">', `<html lang="${lang}">`)
-      .replace(/<link rel="icon"[^>]*>/, `<link rel="icon" href="${assetPrefix}favicon.png" type="image/png" />`)
+      .replace(/<link rel="icon"[^>]*>/, `<link rel="icon" href="${assetPrefix}favicon.ico" type="image/x-icon" />`)
       .replace('</head>', () => `${renderMetadata(pageMetadata(route))}\n  </head>`);
     await mkdir(routeDir, { recursive: true });
     await writeFile(resolve(routeDir, "index.html"), localized);

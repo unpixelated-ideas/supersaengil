@@ -11,6 +11,7 @@ export function pageMetadata({ lang, page }) {
     privacy: copy.privacyIntro[0],
     terms: copy.termsIntro[0],
     updates: copy.updatesIntro,
+    holidays: copy.holidaysDescription,
     history: copy.historyDescription
   };
   const url = (locale) => new URL(routePath({ lang: locale, page }).slice(1), productionUrl).href;

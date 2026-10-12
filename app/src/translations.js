@@ -1,5 +1,7 @@
 export const translations = {
   ko: {
+    holidaysTitle: "음력 명절",
+    holidaysDescription: "한국의 명절과 세시풍속 20가지의 양력·음력 날짜와 계산 방법을 살펴보세요.",
     appName: "슈퍼생일",
     subtitle: "Super Saengil",
     languageLabel: "언어 · Language",
@@ -166,7 +168,7 @@ export const translations = {
     updatesLink: "업데이트 로그",
     feedbackLink: "피드백",
     updatesTitle: "업데이트 로그",
-    updatesUpdated: "최종 업데이트: 2026년 10월 2일",
+    updatesUpdated: "최종 업데이트: 2026년 10월 11일",
     updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
     historyTitle: "역사",
     historyDescription: "한국의 전통 음력의 역사와 음력의 원리를 알아보세요.",
@@ -212,105 +214,113 @@ export const translations = {
     ],
     updatesEntries: [
       {
-        version: "v0.9.7",
-        date: "2026년 10월 2일",
-        dateIso: "2026-10-02",
-        items: [
-          "한국어와 영어 음력 알아보기 페이지를 주제별 섹션으로 나누고 시각적 위계를 명확히 해 가독성을 개선했습니다.",
-          "양력 탭에 날짜를 선택할 수 있는 달력을 추가했습니다."
-        ]
-      },
-      {
-        version: "v0.9.6",
-        date: "2026년 9월 22일",
-        dateIso: "2026-09-22",
-        items: [
-          "파비콘을 추가했습니다.",
-          "iMessage, Discord 등 지원되는 앱에서 공유한 링크가 깔끔하게 표시되도록 미리보기를 개선했습니다.",
-          "음력 알아보기 페이지의 내용을 일부 수정했습니다."
-        ]
-      },
-      {
-        version: "v0.9.5",
-        date: "2026년 9월 18일",
-        dateIso: "2026-09-18",
-        items: [
-          "로고를 업데이트했습니다.",
-          "검색 결과 표의 영어 항목명을 더 명확하게 다듬었습니다."
-        ]
-      },
-      {
         version: "v0.9.4",
-        date: "2026년 9월 6일",
-        dateIso: "2026-09-06",
+        date: "2026년 10월 11일",
+        dateIso: "2026-10-11",
         items: [
-          "모바일 사용성을 개선했으며, 특히 검색 결과가 표시되는 방식을 다듬었습니다."
+          "한국의 음력 명절을 살펴보고 해마다 날짜가 어떻게 달라지는지 확인할 수 있는 <strong>음력 명절</strong> 페이지를 새롭게 추가했습니다.",
+          "각 버전의 변경 사항을 더 쉽게 이해할 수 있도록 <strong>업데이트 로그</strong>의 설명을 명확하게 다듬고 형식을 일관되게 정리했습니다."
         ]
       },
       {
         version: "v0.9.3",
-        date: "2026년 8월 31일",
-        dateIso: "2026-08-31",
+        date: "2026년 10월 2일",
+        dateIso: "2026-10-02",
         items: [
-          "사용자 의견을 받을 수 있도록 피드백 링크를 추가했습니다."
+          "한국어와 영어 <strong>음력 알아보기</strong> 페이지를 짧고 읽기 쉬운 섹션으로 재구성해 내용을 읽고 찾아보기 편하게 개선했습니다.",
+          "양력 탭에 날짜 선택기를 추가해 달력을 일일이 넘기지 않고도 원하는 날짜를 더 쉽게 선택할 수 있도록 했습니다."
         ]
       },
       {
         version: "v0.9.2",
-        date: "2026년 8월 29일",
-        dateIso: "2026-08-29",
+        date: "2026년 9월 22일",
+        dateIso: "2026-09-22",
         items: [
-          "초기화 버튼을 추가했습니다.",
-          "사용자가 음력 생일 날짜를 .ics 파일로 다운로드해 Apple Calendar, Gmail, Outlook 또는 .ics 파일을 지원하는 모든 캘린더 앱으로 가져올 수 있도록 했습니다.",
-          "한국어 모드에서 앱 안에 표시되는 표현을 생일과 생신 중에서 선택할 수 있도록 했습니다.",
-          "사용자의 브라우저 설정에 따라 사이트가 자동으로 올바른 언어로 표시되도록 했습니다.",
-          "한국 음력의 역사를 설명하는 페이지를 추가했습니다."
+          "브라우저 탭에서 사이트를 더 쉽게 알아볼 수 있도록 파비콘을 추가했습니다.",
+          "iMessage, Discord 등 지원되는 앱에서 슈퍼생일 링크를 공유할 때 더 깔끔하게 표시되도록 링크 미리보기를 개선했습니다.",
+          "<strong>음력 알아보기</strong> 페이지의 일부 내용을 더 명확하게 다듬었습니다."
         ]
       },
       {
         version: "v0.9.1",
-        date: "2026년 8월 26일",
-        dateIso: "2026-08-26",
+        date: "2026년 9월 18일",
+        dateIso: "2026-09-18",
         items: [
-          "모바일 웹 화면을 더 편하게 사용할 수 있도록 추가 수정 사항을 반영했습니다.",
-          "검색 후 사용자가 검색 결과로 바로 이동하도록 개선했습니다."
+          "슈퍼생일의 로고를 새롭게 다듬어 더 깔끔하고 알아보기 쉬운 사이트 이미지를 만들었습니다.",
+          "검색 결과 표의 영어 항목명을 수정해 정보를 더 쉽게 이해할 수 있도록 했습니다."
         ]
       },
       {
         version: "v0.9",
-        date: "2026년 8월 22일",
-        dateIso: "2026-08-22",
+        date: "2026년 9월 6일",
+        dateIso: "2026-09-06",
         items: [
-          "업데이트 로그를 추가했습니다.",
-          "모바일과 태블릿에서 더 편하게 사용할 수 있도록 화면을 최적화했습니다."
+          "작은 화면에서도 검색 결과를 더 쉽게 읽고 살펴볼 수 있도록 모바일 사용성을 개선했습니다."
         ]
       },
       {
         version: "v0.8",
-        date: "2026년 8월 18일",
-        dateIso: "2026-08-18",
+        date: "2026년 8월 31일",
+        dateIso: "2026-08-31",
         items: [
-          "개인정보 처리방침을 추가했습니다.",
-          "이용약관을 추가했습니다."
+          "제안을 보내거나 문제를 알리고 향후 개선에 의견을 보탤 수 있도록 피드백 링크를 추가했습니다."
         ]
       },
       {
         version: "v0.7",
-        date: "2026년 8월 5일",
-        dateIso: "2026-08-05",
+        date: "2026년 8월 29일",
+        dateIso: "2026-08-29",
         items: [
-          "음력 윤달 계산 지원을 개선했습니다.",
-          "사용자 인터페이스를 전반적으로 개편했습니다."
+          "선택한 내용을 빠르게 지우고 새 검색을 시작할 수 있도록 초기화 버튼을 추가했습니다.",
+          "음력 생일을 <code>.ics</code> 파일로 다운로드해 Apple Calendar, Google Calendar, Outlook 등 호환되는 캘린더 앱으로 가져올 수 있는 기능을 추가했습니다.",
+          "한국어 모드에서 <strong>생일</strong>과 <strong>생신</strong> 중 사용할 표현을 선택할 수 있는 옵션을 추가했습니다.",
+          "브라우저 언어 설정에 따라 슈퍼생일이 한국어 또는 영어로 열리도록 자동 언어 감지 기능을 추가했습니다.",
+          "한국 음력의 역사적 배경과 원리를 설명하는 <strong>음력 알아보기</strong> 페이지를 선보였습니다."
         ]
       },
       {
         version: "v0.6",
+        date: "2026년 8월 26일",
+        dateIso: "2026-08-26",
+        items: [
+          "모바일 브라우저에서 슈퍼생일의 화면 구성과 사용성을 개선하기 위해 추가로 조정했습니다.",
+          "검색 후 결과가 자동으로 화면에 나타나도록 개선해 매번 직접 스크롤할 필요가 없도록 했습니다."
+        ]
+      },
+      {
+        version: "v0.5",
+        date: "2026년 8월 22일",
+        dateIso: "2026-08-22",
+        items: [
+          "새로운 기능과 수정 사항, 기타 개선 내용을 기록하는 <strong>업데이트 로그</strong>를 선보였습니다.",
+          "휴대전화와 태블릿에 맞게 화면을 최적화해 다양한 화면 크기에서 슈퍼생일을 더 편하게 이용할 수 있도록 했습니다."
+        ]
+      },
+      {
+        version: "v0.4",
+        date: "2026년 8월 18일",
+        dateIso: "2026-08-18",
+        items: [
+          "슈퍼생일의 운영 방식과 이용 조건을 더 투명하게 안내하기 위해 별도의 <strong>개인정보 처리방침</strong>과 <strong>이용약관</strong> 페이지를 추가했습니다."
+        ]
+      },
+      {
+        version: "v0.3",
+        date: "2026년 8월 5일",
+        dateIso: "2026-08-05",
+        items: [
+          "윤달에 태어난 사람의 생일도 더 잘 처리할 수 있도록 음력 윤달 지원을 개선했습니다.",
+          "더 깔끔하고 직관적으로 사용할 수 있도록 사용자 인터페이스를 새롭게 디자인했습니다."
+        ]
+      },
+      {
+        version: "v0.2",
         date: "2026년 7월 31일",
         dateIso: "2026-07-31",
         items: [
-          "슈퍼생일의 초기 빌드를 만들었습니다.",
-          "한국어와 영어 버전을 모두 채웠습니다.",
-          "사용자가 라이트 모드와 다크 모드를 전환할 수 있는 화면 설정을 추가했습니다."
+          "한국의 음력 생일과 그에 해당하는 양력 날짜를 알아볼 수 있는 핵심 기능을 담아 <strong>슈퍼생일</strong>의 첫 버전을 출시했습니다.",
+          "처음부터 한국어와 영어를 모두 지원했습니다.",
+          "개인의 취향에 따라 라이트 모드와 다크 모드를 전환할 수 있는 화면 설정을 추가했습니다."
         ]
       }
     ],
@@ -397,6 +407,8 @@ export const translations = {
     ]
   },
   en: {
+    holidaysTitle: "Lunar Holidays",
+    holidaysDescription: "Explore the solar and lunar dates, calendar rules, and traditions of 20 Korean holidays and observances.",
     appName: "Super Saengil",
     subtitle: "슈퍼생일",
     languageLabel: "Language · 언어",
@@ -563,7 +575,7 @@ export const translations = {
     updatesLink: "Update Log",
     feedbackLink: "Feedback",
     updatesTitle: "Update Log",
-    updatesUpdated: "Last updated: October 2, 2026",
+    updatesUpdated: "Last updated: October 11, 2026",
     updatesIntro: "A running record of major Super Saengil changes and improvements.",
     historyTitle: "History",
     historyDescription: "Explore the history of Korea’s traditional lunar calendar and how the lunar calendar works.",
@@ -609,105 +621,113 @@ export const translations = {
     ],
     updatesEntries: [
       {
-        version: "v0.9.7",
-        date: "October 2, 2026",
-        dateIso: "2026-10-02",
-        items: [
-          "Improved readability on the History / Lunar Calendar Explained page with a section-based structure and clearer visual hierarchy in both English and Korean.",
-          "Added a calendar picker to the solar calendar tab."
-        ]
-      },
-      {
-        version: "v0.9.6",
-        date: "September 22, 2026",
-        dateIso: "2026-09-22",
-        items: [
-          "Added a favicon.",
-          "Improved link previews for cleaner sharing in iMessage, Discord, and other supported apps.",
-          "Made minor content updates to the Lunar Calendar Explained page."
-        ]
-      },
-      {
-        version: "v0.9.5",
-        date: "September 18, 2026",
-        dateIso: "2026-09-18",
-        items: [
-          "Updated the logo.",
-          "Clarified the English labels in the search results table."
-        ]
-      },
-      {
         version: "v0.9.4",
-        date: "September 6, 2026",
-        dateIso: "2026-09-06",
+        date: "October 11, 2026",
+        dateIso: "2026-10-11",
         items: [
-          "Improved the mobile experience, especially how search results are displayed."
+          "Added a new <strong>Lunar Holidays</strong> page for exploring Korean lunar holidays and seeing how their dates change from year to year.",
+          "Refined the <strong>Update Log</strong> with clearer descriptions and more consistent formatting, making it easier to understand the changes introduced in each release."
         ]
       },
       {
         version: "v0.9.3",
-        date: "August 31, 2026",
-        dateIso: "2026-08-31",
+        date: "October 2, 2026",
+        dateIso: "2026-10-02",
         items: [
-          "Added a feedback link to collect user input."
+          "Reorganized the <strong>Lunar Calendar Explained</strong> page into shorter, more manageable sections, making it easier to read and navigate in both English and Korean.",
+          "Added a calendar picker to the solar calendar tab, making it easier to select specific dates without navigating through the calendar manually."
         ]
       },
       {
         version: "v0.9.2",
-        date: "August 29, 2026",
-        dateIso: "2026-08-29",
+        date: "September 22, 2026",
+        dateIso: "2026-09-22",
         items: [
-          "Added a reset button.",
-          "Users can now download lunar birthdates as .ics files and import them into Apple Calendar, Gmail, Outlook, or any calendar app that accepts .ics files.",
-          "In Korean language mode, users can now choose whether the app uses saengil (생일) or saengshin (생신). Saengshin is an honorific used for older or highly respected people.",
-          "The site now automatically chooses the correct language based on the user's browser settings.",
-          "Added a page explaining the history of the Korean lunar calendar."
+          "Added a favicon for improved visibility and recognition in browser tabs.",
+          "Improved link previews for a cleaner appearance when sharing Super Saengil through iMessage, Discord, and other supported apps.",
+          "Refined some of the content on the <strong>Lunar Calendar Explained</strong> page for greater clarity."
         ]
       },
       {
         version: "v0.9.1",
-        date: "August 26, 2026",
-        dateIso: "2026-08-26",
+        date: "September 18, 2026",
+        dateIso: "2026-09-18",
         items: [
-          "Made additional fixes to improve the mobile web view.",
-          "After searching, users are now brought directly to the search results."
+          "Updated the Super Saengil logo to give the site a cleaner, more recognizable identity.",
+          "Revised the English labels in the search results table to make the information easier to understand."
         ]
       },
       {
         version: "v0.9",
-        date: "August 22, 2026",
-        dateIso: "2026-08-22",
+        date: "September 6, 2026",
+        dateIso: "2026-09-06",
         items: [
-          "Added the Update Log.",
-          "Optimized the experience for mobile and tablet users."
+          "Improved the mobile experience, with a particular focus on making search results easier to read and navigate on smaller screens."
         ]
       },
       {
         version: "v0.8",
-        date: "August 18, 2026",
-        dateIso: "2026-08-18",
+        date: "August 31, 2026",
+        dateIso: "2026-08-31",
         items: [
-          "Added the Privacy Policy.",
-          "Added the Terms of Use."
+          "Added a feedback link to make it easier to share suggestions, report issues, and contribute to future improvements."
         ]
       },
       {
         version: "v0.7",
-        date: "August 5, 2026",
-        dateIso: "2026-08-05",
+        date: "August 29, 2026",
+        dateIso: "2026-08-29",
         items: [
-          "Improved support for lunar leap months.",
-          "Overhauled the user interface."
+          "Added a reset button for quickly clearing selections and starting a new search.",
+          "Added the ability to download lunar birthdays as <code>.ics</code> files for importing into Apple Calendar, Google Calendar, Outlook, and other compatible calendar apps.",
+          "Added an option in Korean language mode to choose between <strong>생일</strong> (saengil) and <strong>생신</strong> (saengshin), the honorific form traditionally used when referring to the birthdays of older or highly respected people.",
+          "Added automatic language detection so Super Saengil opens in English or Korean based on browser language settings.",
+          "Introduced the <strong>Lunar Calendar Explained</strong> page, providing historical background and an explanation of how the Korean lunar calendar works."
         ]
       },
       {
         version: "v0.6",
+        date: "August 26, 2026",
+        dateIso: "2026-08-26",
+        items: [
+          "Made additional adjustments to improve the layout and usability of Super Saengil on mobile browsers.",
+          "Improved the search experience by automatically bringing search results into view, eliminating the need for manual scrolling after each search."
+        ]
+      },
+      {
+        version: "v0.5",
+        date: "August 22, 2026",
+        dateIso: "2026-08-22",
+        items: [
+          "Introduced the <strong>Update Log</strong> to provide a record of new features, fixes, and other improvements.",
+          "Optimized the interface for phones and tablets, making Super Saengil more accessible across different screen sizes."
+        ]
+      },
+      {
+        version: "v0.4",
+        date: "August 18, 2026",
+        dateIso: "2026-08-18",
+        items: [
+          "Added dedicated <strong>Privacy Policy</strong> and <strong>Terms of Use</strong> pages to provide greater transparency about how Super Saengil operates and the terms under which it can be used."
+        ]
+      },
+      {
+        version: "v0.3",
+        date: "August 5, 2026",
+        dateIso: "2026-08-05",
+        items: [
+          "Improved support for lunar leap months to better accommodate birthdays that fall within these additional months.",
+          "Redesigned the user interface to create a cleaner, more intuitive experience."
+        ]
+      },
+      {
+        version: "v0.2",
         date: "July 31, 2026",
         dateIso: "2026-07-31",
         items: [
-          "Created the initial Super Saengil build.",
-          "Populated both English and Korean versions.",
-          "Added an appearance picker so users can switch between light and dark modes."
+          "Released the initial version of <strong>Super Saengil</strong>, introducing the core functionality for exploring Korean lunar birthdays and their corresponding solar calendar dates.",
+          "Launched with full English and Korean language support.",
+          "Added an appearance picker for switching between light and dark modes according to individual preferences."
         ]
       }
     ],
