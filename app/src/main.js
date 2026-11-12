@@ -1,4 +1,5 @@
 import "./styles.css";
+import { captureMotion, finishMotion, prefersReducedMotion } from "./motion.js";
 import { holidayPageTemplate } from "./holiday-page.js";
 import { parseRoute, routePath } from "./routes.js";
 import { syncMetadata } from "./metadata.js";
@@ -48,6 +49,8 @@ const state = {
 };
 
 let downloadTimer = null;
+let themeTransitionTimer = null;
+let languageTransition = null;
 
 const app = document.querySelector("#app");
 const media = window.matchMedia("(prefers-color-scheme: dark)");
@@ -108,6 +111,7 @@ function officialAppSubtitle() {
 }
 
 function render() {
+  const previousMotion = captureMotion(app);
   state.lang = parseRoute(location.pathname).lang;
   syncMetadata(parseRoute(location.pathname));
   const isReverse = state.reverseUnlocked && state.searchMode === "reverse";
@@ -165,6 +169,7 @@ function render() {
     </div>
   `;
   bindEvents();
+  finishMotion(app, previousMotion);
 }
 
 function homePageTemplate(isReverse) {
@@ -249,6 +254,16 @@ function themeButton(value, iconName, label) {
       ${icon(iconName)}<span>${label}</span>
     </button>
   `;
+}
+
+// Keep these controls mounted so the selection indicator can transition.
+function syncThemeControls() {
+  app.querySelectorAll("[data-appearance]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.appearance === state.theme));
+  });
+  app.querySelector(".theme-toggle")?.style.setProperty("--active-index", themeIndex());
+  const select = app.querySelector("[data-appearance-select]");
+  if (select) select.value = state.theme;
 }
 
 function themeIndex() {
@@ -368,10 +383,7 @@ function infoSectionTemplate() {
 }
 
 function infoHeadlineTemplate() {
-  if (state.lang === "ko") {
-    return `${isHonorificBirthday() ? "생신" : "생일"}이 <span>두 배로</span> 특별해지는 날${secretPeriodTemplate()}`;
-  }
-  return `When two birthdays become <span>one</span>${secretPeriodTemplate()}`;
+  return t("infoHeadline").replace(/\.$/, secretPeriodTemplate());
 }
 
 function secretPeriodTemplate() {
@@ -867,7 +879,7 @@ function bindEvents() {
       state.theme = button.dataset.appearance;
       localStorage.setItem(storageKeys.theme, state.theme);
       applyTheme();
-      render();
+      syncThemeControls();
     });
   });
 
@@ -888,7 +900,7 @@ function bindEvents() {
     state.theme = event.currentTarget.value;
     localStorage.setItem(storageKeys.theme, state.theme);
     applyTheme();
-    render();
+    syncThemeControls();
   });
 
   document.querySelectorAll("[data-mode]").forEach((button) => {
@@ -1128,7 +1140,7 @@ function focusSearchResults() {
     } catch (_error) {
       results.focus();
     }
-    results.scrollIntoView?.({ behavior: "smooth", block: "start" });
+    results.scrollIntoView?.({ behavior: prefersReducedMotion() ? "instant" : "smooth", block: "start" });
   };
 
   focusAndScroll();
@@ -1259,10 +1271,73 @@ function resetSearch() {
 
 function switchLanguage(lang) {
   const route = parseRoute(location.pathname);
+  if (route.lang === lang) return;
+  const previousHeader = app.querySelector(".topbar");
+  const previousHeight = previousHeader?.getBoundingClientRect().height;
+  const previousPicker = app.querySelector(".birthday-term-control")?.cloneNode(true);
+  const form = app.querySelector("#birthdayForm");
+  if (form) syncFieldsFromForm(form);
   const path = routePath({ ...route, lang });
-  if (path !== location.pathname) history.pushState(null, "", path + location.search + location.hash);
-  localStorage.setItem(storageKeys.lang, lang);
-  render();
+  const update = () => {
+    if (path !== location.pathname) history.pushState(null, "", path + location.search + location.hash);
+    localStorage.setItem(storageKeys.lang, lang);
+    render();
+  };
+  if (document.startViewTransition && !prefersReducedMotion()) {
+    languageTransition?.skipTransition();
+    document.documentElement.classList.add("language-crossfade");
+    const transition = document.startViewTransition(() => {
+      update();
+      // The snapshots handle the fade; do not also fade the live content.
+      app.querySelector("main")?.classList.remove("motion-page");
+    });
+    languageTransition = transition;
+    transition.finished.catch(() => {}).finally(() => {
+      if (languageTransition !== transition) return;
+      languageTransition = null;
+      document.documentElement.classList.remove("language-crossfade");
+    });
+  } else {
+    update();
+    animateLanguageChange(previousHeight, previousPicker);
+  }
+}
+
+function animateLanguageChange(previousHeight, previousPicker) {
+  if (prefersReducedMotion()) return;
+  const header = app.querySelector(".topbar");
+  if (!header?.animate) return;
+  const main = app.querySelector("main");
+  if (main) main.style.animationDuration = "400ms";
+  const timing = { duration: 400, easing: "cubic-bezier(.4, 0, .2, 1)" };
+  const nextHeight = header.getBoundingClientRect().height;
+  // Interpolate the measured header height so the form below moves with the
+  // Korean-only control. Natural heights accommodate wrapped mobile labels.
+  if (previousHeight && previousHeight !== nextHeight) {
+    header.animate([{ height: `${previousHeight}px` }, { height: `${nextHeight}px` }], timing);
+  }
+  app.querySelector(".header-controls")?.animate([{ opacity: .4 }, { opacity: 1 }], timing);
+  const picker = app.querySelector(".birthday-term-control");
+  if (picker) {
+    picker.animate([{ opacity: 0, transform: "translateY(-6px)" },
+      { opacity: 1, transform: "translateY(0)" }], timing);
+  } else if (previousPicker) {
+    // A non-interactive outgoing copy can fade upward without retaining any
+    // Korean-only controls in the English accessibility tree or tab order.
+    const stack = app.querySelector(".header-controls > .control-stack:last-child");
+    if (!stack) return;
+    previousPicker.classList.add("language-picker-outgoing");
+    previousPicker.inert = true;
+    previousPicker.setAttribute("aria-hidden", "true");
+    previousPicker.querySelectorAll("input").forEach((input) => {
+      input.disabled = true;
+      input.removeAttribute("name");
+    });
+    stack.append(previousPicker);
+    const animation = previousPicker.animate([{ opacity: 1, transform: "translateY(0)" },
+      { opacity: 0, transform: "translateY(-6px)" }], timing);
+    animation.onfinish = () => previousPicker.remove();
+  }
 }
 
 function currentLegalPage() {
@@ -1495,7 +1570,25 @@ function restoreFromUrl() {
 
 function applyTheme() {
   const resolved = state.theme === "system" ? (media.matches ? "dark" : "light") : state.theme;
-  document.documentElement.dataset.theme = resolved;
+  const root = document.documentElement;
+  if (root.dataset.theme && root.dataset.theme !== resolved && !prefersReducedMotion()) {
+    window.clearTimeout(themeTransitionTimer);
+    root.classList.add("theme-changing");
+    const canvas = app.querySelector(".app-background");
+    if (canvas) {
+      const previousBackground = getComputedStyle(canvas).background;
+      canvas.querySelector(".theme-canvas-previous")?.remove();
+      const previous = document.createElement("div");
+      previous.className = "theme-canvas-previous";
+      previous.style.background = previousBackground;
+      canvas.append(previous);
+    }
+    themeTransitionTimer = window.setTimeout(() => {
+      root.classList.remove("theme-changing");
+      app.querySelector(".theme-canvas-previous")?.remove();
+    }, 450);
+  }
+  root.dataset.theme = resolved;
   document.documentElement.dataset.themeMode = state.theme;
   const themeColor = getComputedStyle(document.documentElement).getPropertyValue("--theme-color").trim();
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", themeColor || (resolved === "dark" ? "#071020" : "#ffffff"));

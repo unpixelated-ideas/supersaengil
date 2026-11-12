@@ -115,16 +115,16 @@ describe("Super Saengil interface", () => {
     await loadApp();
     const info = () => document.querySelector(".info-section").textContent;
 
-    expect(info()).toContain("생일이 두 배로 특별해지는 날.");
-    expect(info()).toContain("슈퍼생일이란?");
-    expect(info()).not.toContain("When two birthdays become one.");
+    expect(info()).toContain("음력 생일을 내 캘린더로.");
+    expect(info()).toContain("음력 생일 확인하기");
+    expect(info()).not.toContain("From the lunar calendar to yours.");
     expect(info()).not.toContain("What's a Super Birthday?");
 
     document.querySelector('[data-lang="en"]').click();
-    expect(info()).toContain("When two birthdays become one.");
-    expect(info()).toContain("What's a Super Saengil?");
-    expect(info()).not.toContain("생일이 두 배로 특별해지는 날.");
-    expect(info()).not.toContain("슈퍼생일이란?");
+    expect(info()).toContain("From the lunar calendar to yours.");
+    expect(info()).toContain("Find lunar birthdays");
+    expect(info()).not.toContain("음력 생일을 내 캘린더로.");
+    expect(info()).not.toContain("음력 생일 확인하기");
   });
 
   it("shows a localized Terms link in the homepage footer", async () => {
@@ -199,7 +199,7 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 10월 11일");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 11월 11일");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
@@ -211,7 +211,7 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: October 11, 2026");
+    expect(document.body.textContent).toContain("Last updated: November 11, 2026");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("August 26, 2026");
     expect(document.body.textContent).toContain("Optimized the interface for phones and tablets, making Super Saengil more accessible across different screen sizes.");
@@ -285,6 +285,21 @@ describe("Super Saengil interface", () => {
     expect(document.activeElement).toBe(picker);
   });
 
+  it("preserves unsubmitted dates across language switches", async () => {
+    await loadApp();
+    document.querySelector("#year").value = "1990";
+    document.querySelector("#month").value = "5";
+    document.querySelector("#day").value = "15";
+    document.querySelector('[data-lang="en"]').click();
+    expect(document.querySelector("#year").value).toBe("1990");
+    expect(document.querySelector("#month").value).toBe("5");
+    expect(document.querySelector("#day").value).toBe("15");
+    expect(document.querySelector(".birthday-term-control")).toBeNull();
+    document.querySelector('[data-lang="ko"]').click();
+    expect(document.querySelector(".birthday-term-control")).not.toBeNull();
+    expect(document.querySelector("#year").value).toBe("1990");
+  });
+
   it("switches theme and persists the choice", async () => {
     await loadApp();
     document.querySelector('[data-appearance="dark"]').click();
@@ -313,8 +328,8 @@ describe("Super Saengil interface", () => {
     expect(document.querySelector(".brand-title").textContent).toBe("슈퍼생신");
     expect(document.querySelector(".brand small").textContent).toBe("Super Sangshin");
     expect(document.querySelector("#birthdayFormTitle").textContent).toContain("양력 생신");
-    expect(document.querySelector(".info-section").textContent).toContain("생신이 두 배로 특별해지는 날.");
-    expect(document.querySelector(".info-section").textContent).toContain("슈퍼생신이란?");
+    expect(document.querySelector(".info-section").textContent).toContain("음력 생신을 내 캘린더로.");
+    expect(document.querySelector(".info-section").textContent).toContain("음력 생신 확인하기");
     expect(document.querySelector(".info-section").textContent).not.toContain("슈퍼생일");
 
     document.querySelector('[data-lang="en"]').click();

@@ -35,6 +35,7 @@ for (const lang of languages) {
     const localized = template
       .replace('<html lang="ko">', `<html lang="${lang}">`)
       .replace(/<link rel="icon"[^>]*>/, `<link rel="icon" href="${assetPrefix}favicon.ico" type="image/x-icon" />`)
+      .replace(/<link rel="manifest"[^>]*>/, `<link rel="manifest" href="${assetPrefix}manifest.webmanifest" />`)
       .replace('</head>', () => `${renderMetadata(pageMetadata(route))}\n  </head>`);
     await mkdir(routeDir, { recursive: true });
     await writeFile(resolve(routeDir, "index.html"), localized);

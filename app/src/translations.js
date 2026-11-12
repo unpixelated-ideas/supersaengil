@@ -112,14 +112,15 @@ export const translations = {
     iconCheck: "일치",
     iconNo: "불일치",
     inputHelp: "생년월일을 입력하면 2127년까지의 일치 연도를 계산합니다.",
-    infoHeadline: "생일이 두 배로 특별해지는 날.",
-    infoSubheadline: "양력과 음력 생일을 한눈에 비교하고, 두 생일이 만나는 특별한 해를 찾아보세요.",
-    infoCard1Title: "슈퍼생일이란?",
-    infoCard1Body: "양력 생일과 음력 생일이 같은 날에 돌아오는 특별한 생일이에요. 슈퍼생일에서 두 생일이 다시 만나는 해를 찾아보세요.",
-    infoCard2Title: "앞으로의 생일 확인하기",
-    infoCard2Body: "2127년까지 양력과 음력 생일을 확인하고, 가족과 친구의 음력 생일이 매년 언제인지 쉽게 알아보세요.",
-    infoCard3Title: "음력 생일을 캘린더에 추가하세요",
-    infoCard3Body: "음력 생일을 간편하게 다운로드해 개인 캘린더에 추가하세요. 중요한 날짜를 챙기고 소중한 생일을 놓치지 않고 축하할 수 있어요.",
+    homeDescription: "음력 생일이 양력으로 언제인지 2127년까지 확인하고, 일정 파일을 다운로드해 원하는 캘린더 앱에 추가하세요.",
+    infoHeadline: "음력 생일을 <span>내 캘린더로</span>.",
+    infoSubheadline: "음력 생일의 양력 날짜를 확인하고, 일정 파일을 다운로드해 평소 쓰는 캘린더 앱에 추가하세요.",
+    infoCard1Title: "음력 생일 확인하기",
+    infoCard1Body: "양력이나 음력 생일을 입력해 두 달력의 날짜가 어떻게 대응하는지 확인하세요.",
+    infoCard2Title: "앞으로의 생일 날짜 확인하기",
+    infoCard2Body: "2127년까지 음력 생일이 양력으로 언제인지 확인하고, 가족과 친구의 생일도 미리 챙기세요.",
+    infoCard3Title: "캘린더에 음력 생일 추가하기",
+    infoCard3Body: "음력 생일 일정을 다운로드해 Apple 캘린더, Google 캘린더, Outlook 등 호환되는 캘린더 앱에 가져오세요.",
     privacyLink: "개인정보 처리방침",
     privacyTitle: "개인정보 처리방침",
     privacyUpdated: "최종 업데이트: 2026년 8월 18일",
@@ -168,7 +169,7 @@ export const translations = {
     updatesLink: "업데이트 로그",
     feedbackLink: "피드백",
     updatesTitle: "업데이트 로그",
-    updatesUpdated: "최종 업데이트: 2026년 10월 11일",
+    updatesUpdated: "최종 업데이트: 2026년 11월 11일",
     updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
     historyTitle: "역사",
     historyDescription: "한국의 전통 음력의 역사와 음력의 원리를 알아보세요.",
@@ -213,6 +214,16 @@ export const translations = {
       }
     ],
     updatesEntries: [
+      {
+        version: "v0.9.5",
+        date: "2026년 11월 11일",
+        dateIso: "2026-11-11",
+        items: [
+          "슈퍼생일의 목적을 더 명확하게 전달하도록 앱 문구를 다듬었습니다.",
+          "화면과 요소 사이의 전환 효과를 추가해 앱을 더 부드럽고 자연스럽게 사용할 수 있도록 개선했습니다.",
+          "Microsoft Edge에서 슈퍼생일을 프로그레시브 웹 앱(PWA)으로 인식할 수 있도록 사이트를 개선했습니다."
+        ]
+      },
       {
         version: "v0.9.4",
         date: "2026년 10월 11일",
@@ -519,14 +530,15 @@ export const translations = {
     iconCheck: "Match",
     iconNo: "No match",
     inputHelp: "Enter a birthday to calculate matching years through 2127.",
-    infoHeadline: "When two birthdays become one.",
-    infoSubheadline: "Compare solar and lunar birthdays and discover the special years when they fall on the same day.",
-    infoCard1Title: "What's a Super Saengil?",
-    infoCard1Body: "A Super Saengil, or “Super Birthday” in English, is the rare occasion when your solar and lunar birthdays fall on the same day. Find out when yours line up again.",
+    homeDescription: "Find Korean lunar birthdays on the solar calendar, explore dates through 2127, and download calendar events for your favorite calendar app.",
+    infoHeadline: "From the lunar calendar to <span>yours</span>.",
+    infoSubheadline: "See when Korean lunar birthdays fall each year, then add them to your calendar app.",
+    infoCard1Title: "Find lunar birthdays",
+    infoCard1Body: "Enter a solar or lunar birthday to see how the dates correspond across both calendars.",
     infoCard2Title: "See birthdays ahead",
-    infoCard2Body: "See solar and lunar birthday dates through 2127, making it easy to keep track of your own birthdays and those of family and friends.",
+    infoCard2Body: "See when lunar birthdays fall on the solar calendar through 2127, making it easy to plan for yourself, family, and friends.",
     infoCard3Title: "Add lunar birthdays to your calendar",
-    infoCard3Body: "Easily download lunar birthdays to your personal calendar so you can keep track of important dates and never miss a celebration.",
+    infoCard3Body: "Download calendar events for lunar birthdays and import them into Apple Calendar, Google Calendar, Outlook, or another compatible calendar app.",
     privacyLink: "Privacy Policy",
     privacyTitle: "Privacy Policy",
     privacyUpdated: "Last updated: August 18, 2026",
@@ -575,7 +587,7 @@ export const translations = {
     updatesLink: "Update Log",
     feedbackLink: "Feedback",
     updatesTitle: "Update Log",
-    updatesUpdated: "Last updated: October 11, 2026",
+    updatesUpdated: "Last updated: November 11, 2026",
     updatesIntro: "A running record of major Super Saengil changes and improvements.",
     historyTitle: "History",
     historyDescription: "Explore the history of Korea’s traditional lunar calendar and how the lunar calendar works.",
@@ -620,6 +632,16 @@ export const translations = {
       }
     ],
     updatesEntries: [
+      {
+        version: "v0.9.5",
+        date: "November 11, 2026",
+        dateIso: "2026-11-11",
+        items: [
+          "Refined the app's copy to more clearly communicate Super Saengil's mission.",
+          "Added transitions between views and interface elements to make the app feel smoother and more fluid.",
+          "Updated the site so Microsoft Edge recognizes Super Saengil as a Progressive Web App (PWA)."
+        ]
+      },
       {
         version: "v0.9.4",
         date: "October 11, 2026",

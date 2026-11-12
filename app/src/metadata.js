@@ -7,7 +7,7 @@ export function pageMetadata({ lang, page }) {
   const copy = translations[lang];
   const title = page ? `${copy[`${page}Title`]} · ${copy.appName}` : `${copy.appName} · ${copy.subtitle}`;
   const descriptions = {
-    '': copy.infoSubheadline,
+    '': copy.homeDescription,
     privacy: copy.privacyIntro[0],
     terms: copy.termsIntro[0],
     updates: copy.updatesIntro,

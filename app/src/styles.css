@@ -283,7 +283,7 @@ input::placeholder { color: #8a94a6; }
   border-radius: 9px;
   background: var(--primary-soft);
   box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.35);
-  transition: transform 160ms ease;
+  transition: transform var(--motion-appearance) var(--motion-appearance-ease);
   transform: translateX(calc(var(--active-index) * (100% + 4px)));
 }
 
@@ -1906,3 +1906,130 @@ tr.matched td {
   line-height: 1.5;
   color: var(--muted);
 }
+
+/* Shared, restrained motion. No animation delays or hidden resting states. */
+:root {
+  --motion-control: 150ms;
+  --motion-content: 220ms;
+  --motion-page: 300ms;
+  --motion-appearance: 300ms;
+  --motion-theme: 400ms;
+  --motion-appearance-ease: cubic-bezier(.4, 0, .2, 1);
+  --motion-ease: cubic-bezier(.2, .65, .3, 1);
+}
+
+:where(button, select, input, a, summary, .month-choice,
+  .birthday-term-control label, .birthday-term-choice label) {
+  transition: background-color var(--motion-control) ease-out,
+    border-color var(--motion-control) ease-out,
+    color var(--motion-control) ease-out,
+    box-shadow var(--motion-control) ease-out,
+    opacity var(--motion-control) ease-out;
+}
+
+button:enabled:active { opacity: .8; }
+.segment-indicator { transition: transform var(--motion-appearance) var(--motion-appearance-ease); }
+.holiday-chevron { transition: transform var(--motion-content) var(--motion-ease); }
+.motion-page { animation: motion-fade var(--motion-page) var(--motion-ease); }
+.motion-update { animation: motion-fade var(--motion-content) var(--motion-ease); }
+.motion-enter { animation: motion-enter var(--motion-content) var(--motion-ease); }
+
+@keyframes motion-fade {
+  from { opacity: .3; }
+  to { opacity: 1; }
+}
+@keyframes motion-enter {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Native disclosure interpolation where supported; native instant toggling
+   remains the fallback. No fixed heights that could clip Korean or English. */
+@supports (interpolate-size: allow-keywords) {
+  .holiday-item { interpolate-size: allow-keywords; }
+  .holiday-item::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size var(--motion-content) var(--motion-ease),
+      content-visibility var(--motion-content) allow-discrete;
+  }
+  .holiday-item[open]::details-content { block-size: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after, .holiday-item::details-content {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Theme colors have a separate, slower rhythm than hover feedback. */
+:root.theme-changing,
+.theme-changing *,
+.theme-changing *::before,
+.theme-changing *::after {
+  transition: background-color var(--motion-theme) ease-in-out,
+    color var(--motion-theme) ease-in-out,
+    border-color var(--motion-theme) ease-in-out,
+    box-shadow var(--motion-theme) ease-in-out,
+    opacity var(--motion-theme) ease-in-out;
+}
+.theme-changing .segment-indicator {
+  transition: transform var(--motion-appearance) var(--motion-appearance-ease),
+    background-color var(--motion-theme) ease-in-out;
+}
+.theme-canvas-previous {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: theme-canvas-fade var(--motion-theme) ease-in-out forwards;
+}
+@keyframes theme-canvas-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.header-controls > .control-stack:last-child { position: relative; }
+.language-picker-outgoing {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  pointer-events: none;
+}
+
+/* Snapshot crossfades preserve both languages during the transition, instead
+   of replacing the words before the fade starts. Native navigation stays intact. */
+.language-crossfade main { view-transition-name: language-content; }
+.language-crossfade .header-controls { view-transition-name: language-controls; }
+.language-crossfade .birthday-term-control { view-transition-name: language-picker; }
+.language-crossfade .site-footer { view-transition-name: language-footer; }
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; }
+::view-transition-group(language-content),
+::view-transition-group(language-controls),
+::view-transition-group(language-picker),
+::view-transition-group(language-footer) {
+  animation-duration: 400ms;
+  animation-timing-function: ease-in-out;
+}
+::view-transition-old(language-content),
+::view-transition-old(language-controls),
+::view-transition-old(language-footer) {
+  animation: language-text-out 400ms ease-in-out both;
+}
+::view-transition-new(language-content),
+::view-transition-new(language-controls),
+::view-transition-new(language-footer) {
+  animation: language-text-in 400ms ease-in-out both;
+}
+::view-transition-old(language-picker) {
+  animation: language-picker-out 400ms ease-in-out both;
+}
+::view-transition-new(language-picker) {
+  animation: language-picker-in 400ms ease-in-out both;
+}
+@keyframes language-text-out { to { opacity: 0; } }
+@keyframes language-text-in { from { opacity: 0; } }
+@keyframes language-picker-out { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes language-picker-in { from { opacity: 0; transform: translateY(-6px); } }

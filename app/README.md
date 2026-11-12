@@ -38,6 +38,27 @@ cd app
 pnpm test
 ```
 
+## Install as a desktop app
+
+Open the deployed HTTPS homepage in Microsoft Edge and use the address-bar
+installation icon, or Settings and more > More tools > Apps > Install this site
+as an app. Install from the hosted site rather than the local file launcher.
+
+`public/manifest.webmanifest` defines one standalone app covering both languages
+and all pages. Its identity, start URL, scope, and icon URLs are relative to the
+manifest, so they work at `/` and under the GitHub Pages `/supersaengil/` prefix.
+The build adds a link to the same manifest at the correct depth in each generated
+HTML page. Icons are resized from the existing `public/favicon.png` artwork.
+
+No service worker is used or required for Edge installation. Updates are deployed
+through the normal Pages workflow and loaded on refresh or a subsequent launch,
+subject to normal HTTP caching. Offline launch is not guaranteed.
+
+After deployment, verify installation in Edge on Windows, including the app icon,
+language and page navigation, resizing, external links, calendar downloads, and
+loading a new deployment after refreshing. Confirm HTTPS is enforced in the
+repository's Pages settings.
+
 ## Calendar source and range
 
 The app uses `korean-lunar-calendar` for dates within its supported KARI/KASI-standard data range:
@@ -68,3 +89,16 @@ URL. `scripts/inline-build.mjs` generates all ten static HTML entries from one
 Vite build, including localized canonical, hreflang, Open Graph, and Twitter
 metadata. Runtime navigation uses the same metadata configuration.
 The shared preview artwork is deployed from `public/link-preview.png`.
+
+### Motion
+
+`src/styles.css` defines shared 150 ms control, 220 ms content, and 300 ms
+page timings. `src/motion.js` compares content around the existing render,
+animates only changed regions, and restores focus on replaced controls.
+Calculations and navigation remain synchronous; animations never gate actions.
+Page entrances use opacity, while results and dialog entrances move only 3 px.
+Holiday disclosures use native automatic-height interpolation where supported,
+with ordinary native disclosure behavior elsewhere. Large result tables fade
+rather than animating their height, preserving the existing scroll anchoring.
+Reduced motion disables CSS animations/transitions (including the existing
+export spinner) and uses immediate result scrolling. No motion library is used.
