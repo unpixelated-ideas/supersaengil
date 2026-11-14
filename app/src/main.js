@@ -16,6 +16,19 @@ const storageKeys = {
   reverseUnlocked: "super-saengil-reverse-unlocked"
 };
 
+// The bare home URL is the entry point; explicit language/page links stay stable.
+const entryRoute = parseRoute(location.pathname);
+if (entryRoute.isHome && entryRoute.lang === "ko") {
+  const savedLanguage = localStorage.getItem(storageKeys.lang);
+  const browserLanguage = (navigator.languages?.length ? navigator.languages : [navigator.language])
+    .map((language) => language?.toLowerCase().split("-")[0])
+    .find((language) => language === "ko" || language === "en");
+  const language = ["ko", "en"].includes(savedLanguage) ? savedLanguage : browserLanguage || "ko";
+  if (language === "en") {
+    history.replaceState(null, "", `${routePath({ ...entryRoute, lang: language })}${location.search}${location.hash}`);
+  }
+}
+
 const state = {
   lang: parseRoute(location.pathname).lang,
   theme: localStorage.getItem(storageKeys.theme) || "system",

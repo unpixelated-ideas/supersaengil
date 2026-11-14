@@ -68,20 +68,22 @@ beforeEach(() => {
 });
 
 describe("Super Saengil interface", () => {
-  it("uses Korean at the root even when the browser language is English", async () => {
+  it("opens English at /en/ when the browser prefers English", async () => {
     installDom("http://localhost/", ["en-US"]);
     await loadApp();
 
-    expect(document.documentElement.lang).toBe("ko");
-    expect(document.body.textContent).toContain("확인하기");
+    expect(location.pathname).toBe("/en/");
+    expect(document.documentElement.lang).toBe("en");
+    expect(document.body.textContent).toContain("Check dates");
   });
 
-  it("prioritizes Korean when Korean appears anywhere in the browser language list", async () => {
+  it("uses the first supported browser language", async () => {
     installDom("http://localhost/", ["en-US", "ko-KR"]);
     await loadApp();
 
-    expect(document.documentElement.lang).toBe("ko");
-    expect(document.body.textContent).toContain("확인하기");
+    expect(location.pathname).toBe("/en/");
+    expect(document.documentElement.lang).toBe("en");
+    expect(document.body.textContent).toContain("Check dates");
   });
 
   it("defaults to Korean when browser languages do not include Korean or English", async () => {
@@ -92,13 +94,22 @@ describe("Super Saengil interface", () => {
     expect(document.body.textContent).toContain("확인하기");
   });
 
-  it("uses the route ahead of a saved language preference", async () => {
+  it("restores a saved English preference at the bare home URL", async () => {
     installDom("http://localhost/", ["ko-KR"]);
     localStorage.setItem("super-saengil-language", "en");
     await loadApp();
 
-    expect(document.documentElement.lang).toBe("ko");
-    expect(document.body.textContent).toContain("확인하기");
+    expect(document.documentElement.lang).toBe("en");
+    expect(document.body.textContent).toContain("Check dates");
+  });
+
+  it("preserves the deployment base, query and hash when choosing English", async () => {
+    const suffix = "?calendar=solar&year=1988&month=8&day=18#results";
+    installDom(`http://localhost/supersaengil/${suffix}`, ["fr-FR", "en-US"]);
+    await loadApp();
+    expect(location.pathname + location.search + location.hash).toBe(`/supersaengil/en/${suffix}`);
+    expect(document.documentElement.lang).toBe("en");
+    expect(document.querySelector("#year").value).toBe("1988");
   });
 
   it("switches languages and persists the choice", async () => {
@@ -772,8 +783,8 @@ describe('localized routing contract', () => {
       for (const page of ['', 'privacy', 'terms', 'updates', 'history']) {
         const path = `${base}${lang === 'en' ? 'en/' : ''}${page ? `${page}/` : ''}`;
         it(`initializes and links correctly at ${path}`, async () => {
-          installDom(`http://localhost${path}`, [lang === 'ko' ? 'en-US' : 'ko-KR']);
-          localStorage.setItem('super-saengil-language', lang === 'ko' ? 'en' : 'ko');
+          installDom(`http://localhost${path}`, [lang === 'ko' ? 'ko-KR' : 'en-US']);
+          localStorage.setItem('super-saengil-language', lang === 'ko' && !page ? 'ko' : lang === 'ko' ? 'en' : 'ko');
           await loadApp();
           const { translations } = await import('./translations.js');
           expect(document.documentElement.lang).toBe(lang);

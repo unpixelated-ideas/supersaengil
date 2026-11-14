@@ -45,8 +45,11 @@ installation icon, or Settings and more > More tools > Apps > Install this site
 as an app. Install from the hosted site rather than the local file launcher.
 
 `public/manifest.webmanifest` defines one standalone app covering both languages
-and all pages. Its identity, start URL, scope, and icon URLs are relative to the
-manifest, so they work at `/` and under the GitHub Pages `/supersaengil/` prefix.
+and all pages. Its stable identity is `/supersaengil/`. Unlike other relative
+manifest URLs, `id` resolves against the origin, so `./` would identify the
+shared GitHub Pages domain root and collide with other projects using that ID.
+The start URL, scope, and icon URLs remain relative to the manifest, so they work
+at `/` and under the GitHub Pages `/supersaengil/` prefix.
 The build adds a link to the same manifest at the correct depth in each generated
 HTML page. Icons are resized from the existing `public/favicon.png` artwork.
 
@@ -58,6 +61,9 @@ After deployment, verify installation in Edge on Windows, including the app icon
 language and page navigation, resizing, external links, calendar downloads, and
 loading a new deployment after refreshing. Confirm HTTPS is enforced in the
 repository's Pages settings.
+
+After deploying the identity fix, uninstall the old conflated app without
+clearing site data, then install each project again from its own homepage.
 
 ## Calendar source and range
 
@@ -81,7 +87,10 @@ KASI/KARI-backed table conversion is used through 2050. Dates after that are ast
 The URL selects the language: `/` is Korean and `/en/` is English. Both
 support `privacy/`, `terms/`, `updates/`, and `history/`, under the same
 hosting base (production uses `/supersaengil/`). Language switching preserves
-the current page, query string, and hash; saved preferences do not override URLs.
+the current page, query string, and hash. On initial entry to the bare home URL,
+a saved language preference wins, followed by the first supported browser language
+(Korean fallback). English entry updates the URL to `/en/` before rendering.
+Explicit English links and informational page URLs keep their specified language.
 
 `src/routes.js` defines the route matrix and shared path helpers.
 `src/metadata.js` uses existing translations for metadata and owns the production
