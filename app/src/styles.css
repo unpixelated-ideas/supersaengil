@@ -135,6 +135,7 @@ svg { width: 1.1rem; height: 1.1rem; }
 
 .topbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
@@ -145,13 +146,15 @@ svg { width: 1.1rem; height: 1.1rem; }
   --brand-title-size: clamp(2.2rem, 5vw, 3.1rem);
   --brand-subtitle-size: clamp(0.98325rem, 2.1375vw, 1.23975rem);
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  flex: 0 0 auto;
   gap: 18px;
 }
 
 .brand-icon {
   position: relative;
   flex: none;
+  aspect-ratio: 1;
   width: calc(var(--brand-title-size) * 1.02 + 5px + var(--brand-subtitle-size) * 1.2);
   filter: drop-shadow(0 14px 20px rgba(38, 31, 105, 0.28));
 }
@@ -175,6 +178,7 @@ svg { width: 1.1rem; height: 1.1rem; }
 
 .brand-title {
   display: block;
+  white-space: nowrap;
   color: var(--text);
   font-size: var(--brand-title-size);
   font-weight: 650;
@@ -1838,7 +1842,29 @@ tr.matched td {
 .holiday-year button { width: 48px; height: 48px; border: 1px solid var(--border); border-radius: 12px; color: var(--text); background: var(--surface-soft); font-size: 1.4rem; cursor: pointer; touch-action: manipulation; }
 .holiday-year button:hover { background: var(--primary-soft); }
 .holiday-year button:disabled { opacity: .4; cursor: default; }
-.holiday-year [role="status"] { min-width: 100px; font-size: 1.65rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.holiday-year select { min-width: 112px; min-height: 48px; max-width: 140px; padding: 4px 8px; border: 1px solid transparent; border-radius: 12px; background-color: var(--surface); color: var(--text); font-family: inherit; font-size: 1.65rem; font-weight: 800; font-variant-numeric: tabular-nums; cursor: pointer; }
+.holiday-year select:hover { border-color: var(--border); background-color: var(--surface-soft); }
+.holiday-year select:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+/* Informational year details share the existing appearance tokens. */
+.holiday-year-info { margin-top: 16px; }
+.holiday-year-indicators { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 0; }
+.holiday-year-indicator { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-soft); line-height: 1.5; white-space: nowrap; }
+.holiday-year-indicator dt { color: var(--muted); font-size: .85rem; }
+.holiday-year-indicator dd { margin: 0; color: var(--text); font-size: .95rem; font-weight: 700; }
+.holiday-animal-emoji { font-size: 1.25rem; line-height: 1; }
+.holiday-color-swatch { width: 16px; height: 16px; flex: 0 0 16px; border: 1px solid #788394; border-radius: 50%; }
+.holiday-color-swatch.is-blue { background: #2563eb; }
+.holiday-color-swatch.is-red { background: #dc2626; }
+.holiday-color-swatch.is-yellow { background: #facc15; }
+.holiday-color-swatch.is-white { background: #fff; }
+.holiday-color-swatch.is-black { background: #111827; }
+.holiday-year-designation { margin-top: 10px; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+@media (max-width: 420px) {
+  .holiday-year-indicators { gap: 8px; }
+  .holiday-year-indicator { gap: 6px; padding: 8px 10px; }
+  .holiday-year-indicator dt { font-size: .8rem; }
+  .holiday-year-indicator dd { font-size: .9rem; }
+}
 .holiday-note, .holiday-range, .holiday-sources, .holiday-hint { font-size: .9rem; line-height: 1.65; color: var(--muted); }
 .holiday-range { margin-bottom: 24px; }
 .holiday-unavailable { padding: 12px 16px; background: var(--primary-soft); border-radius: 10px; color: var(--text); }

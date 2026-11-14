@@ -169,7 +169,7 @@ export const translations = {
     updatesLink: "업데이트 로그",
     feedbackLink: "피드백",
     updatesTitle: "업데이트 로그",
-    updatesUpdated: "최종 업데이트: 2026년 11월 11일",
+    updatesUpdated: "최종 업데이트: 2026년 11월 14일",
     updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
     historyTitle: "역사",
     historyDescription: "한국의 전통 음력의 역사와 음력의 원리를 알아보세요.",
@@ -216,12 +216,15 @@ export const translations = {
     updatesEntries: [
       {
         version: "v0.9.5",
-        date: "2026년 11월 11일",
-        dateIso: "2026-11-11",
+        date: "2026년 11월 14일",
+        dateIso: "2026-11-14",
         items: [
           "슈퍼생일의 목적을 더 명확하게 전달하도록 앱 문구를 다듬었습니다.",
           "화면과 요소 사이의 전환 효과를 추가해 앱을 더 부드럽고 자연스럽게 사용할 수 있도록 개선했습니다.",
-          "Microsoft Edge에서 슈퍼생일을 프로그레시브 웹 앱(PWA)으로 인식할 수 있도록 사이트를 개선했습니다."
+          "Microsoft Edge에서 슈퍼생일을 프로그레시브 웹 앱(PWA)으로 인식할 수 있도록 사이트를 개선했습니다.",
+          "태블릿에서 화면이 올바르게 표시되지 않던 문제를 수정했습니다.",
+          "<strong>음력 명절</strong> 페이지에서 연도를 더 쉽게 전환할 수 있도록 개선했습니다.",
+          "띠 동물과 그에 해당하는 색상에 관한 정보를 추가했습니다."
         ]
       },
       {
@@ -587,7 +590,7 @@ export const translations = {
     updatesLink: "Update Log",
     feedbackLink: "Feedback",
     updatesTitle: "Update Log",
-    updatesUpdated: "Last updated: November 11, 2026",
+    updatesUpdated: "Last updated: November 14, 2026",
     updatesIntro: "A running record of major Super Saengil changes and improvements.",
     historyTitle: "History",
     historyDescription: "Explore the history of Korea’s traditional lunar calendar and how the lunar calendar works.",
@@ -634,12 +637,15 @@ export const translations = {
     updatesEntries: [
       {
         version: "v0.9.5",
-        date: "November 11, 2026",
-        dateIso: "2026-11-11",
+        date: "November 14, 2026",
+        dateIso: "2026-11-14",
         items: [
           "Refined the app's copy to more clearly communicate Super Saengil's mission.",
           "Added transitions between views and interface elements to make the app feel smoother and more fluid.",
-          "Updated the site so Microsoft Edge recognizes Super Saengil as a Progressive Web App (PWA)."
+          "Updated the site so Microsoft Edge recognizes Super Saengil as a Progressive Web App (PWA).",
+          "Fixed visual issues affecting the app's appearance on tablets.",
+          "Made it easier to switch between years on the <strong>Lunar Holidays</strong> page.",
+          "Added information about zodiac animals and their associated colors."
         ]
       },
       {

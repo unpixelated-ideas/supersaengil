@@ -3,8 +3,33 @@ import { calculationText } from './holiday-data.js';
 import { escapeHtml as escape } from './metadata.js';
 import { MIN_YEAR, MAX_YEAR } from './calendar.js';
 
+const stems = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'];
+const stemHanja = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+const branches = ['자', '축', '인', '묘', '진', '사', '오', '미', '신', '유', '술', '해'];
+const branchHanja = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+const animalEmoji = ['🐀', '🐄', '🐅', '🐇', '🐉', '🐍', '🐎', '🐑', '🐒', '🐔', '🐕', '🐖'];
+const yearColors = ['blue', 'red', 'yellow', 'white', 'black'];
+
+// The selected Gregorian year identifies the lunar year that begins within it,
+// regardless of whether an individual holiday falls before Seollal. 1984 = 갑자.
+export function koreanYearInfo(year) {
+  const modulo = (value, cycle) => ((value % cycle) + cycle) % cycle;
+  const stem = modulo(year - 1984, 10);
+  const branch = modulo(year - 1984, 12);
+  return {
+    animalIndex: branch,
+    emoji: animalEmoji[branch],
+    colorIndex: Math.floor(stem / 2),
+    color: yearColors[Math.floor(stem / 2)],
+    designation: `${stems[stem]}${branches[branch]}년 · ${stemHanja[stem]}${branchHanja[branch]}年`
+  };
+}
+
 export const holidayCopy = {
   en: {
+    animal: 'Animal', color: 'Color',
+    animals: ['Rat', 'Cow', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Sheep', 'Monkey', 'Chicken', 'Dog', 'Pig'],
+    colors: ['Blue', 'Red', 'Yellow', 'White', 'Black'],
     title: 'Lunar Holidays', intro: 'Explore 20 Korean holidays and seasonal traditions, in the order they fall each year.',
     columns: ['English', 'Korean', 'Solar Calendar Date', 'Calculation', 'Lunar Calendar Date', 'Description', 'Public Holiday?'],
     previous: 'Previous year', next: 'Next year', year: 'Gregorian year', yes: 'Yes', no: 'No',
@@ -16,6 +41,9 @@ export const holidayCopy = {
     sources: 'Calendar references', kasi: 'Korea Astronomy and Space Science Institute', hansik: 'Hansik', nabil: 'Nabil'
   },
   ko: {
+    animal: '띠', color: '색상',
+    animals: ['쥐', '소', '호랑이', '토끼', '용', '뱀', '말', '양', '원숭이', '닭', '개', '돼지'],
+    colors: ['푸른색', '붉은색', '노란색', '흰색', '검은색'],
     title: '음력 명절', intro: '한국의 명절과 세시풍속 20가지를 해마다 돌아오는 날짜순으로 살펴보세요.',
     columns: ['한국어', '양력 날짜', '날짜 계산', '음력 날짜', '설명', '공휴일 여부'],
     previous: '이전 연도', next: '다음 연도', year: '양력 연도', yes: '예', no: '아니요',
@@ -30,6 +58,7 @@ export const holidayCopy = {
 
 export function holidayPageTemplate(lang, year, homeHref, backLabel) {
   const c = holidayCopy[lang];
+  const yearInfo = koreanYearInfo(year);
   const dateFormatter = new Intl.DateTimeFormat(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
   const date = (value) => dateFormatter.format(new Date(Date.UTC(value.year, value.month - 1, value.day)));
   const solar = (row) => row.solar ? `${date(row.solar)}${row.end ? ` – ${date(row.end)}` : ''}` : c.unavailable;
@@ -48,8 +77,26 @@ export function holidayPageTemplate(lang, year, homeHref, backLabel) {
         <h1 id="holidaysTitle">${c.title}</h1>
         <div class="holiday-year" role="group" aria-label="${c.year}">
           <button type="button" data-holiday-year="-1" aria-label="${c.previous}" ${year <= MIN_YEAR ? 'disabled' : ''}>←</button>
-          <span id="holidayYear" role="status" aria-live="polite" aria-atomic="true">${lang === 'ko' ? `${year}년` : year}</span>
+          <select id="holidayYear" aria-label="${c.year}">
+            ${Array.from({ length: MAX_YEAR - MIN_YEAR + 1 }, (_, index) => {
+              const optionYear = MIN_YEAR + index;
+              return `<option value="${optionYear}" ${optionYear === year ? 'selected' : ''}>${lang === 'ko' ? `${optionYear}년` : optionYear}</option>`;
+            }).join('')}
+          </select>
           <button type="button" data-holiday-year="1" aria-label="${c.next}" ${year >= MAX_YEAR ? 'disabled' : ''}>→</button>
+        </div>
+        <div class="holiday-year-info" role="status" aria-live="polite" aria-atomic="true">
+          <dl class="holiday-year-indicators">
+            <div class="holiday-year-indicator">
+              <span class="holiday-animal-emoji" aria-hidden="true">${yearInfo.emoji}</span>
+              <dt>${c.animal}</dt><dd>${c.animals[yearInfo.animalIndex]}</dd>
+            </div>
+            <div class="holiday-year-indicator">
+              <span class="holiday-color-swatch is-${yearInfo.color}" aria-hidden="true"></span>
+              <dt>${c.color}</dt><dd>${c.colors[yearInfo.colorIndex]}</dd>
+            </div>
+          </dl>
+          <div class="holiday-year-designation" lang="ko">${yearInfo.designation}</div>
         </div>
         <p>${c.intro}</p>
       </header>

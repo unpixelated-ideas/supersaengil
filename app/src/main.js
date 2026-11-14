@@ -868,6 +868,13 @@ function statusCell(row) {
 }
 
 function bindEvents() {
+  app.querySelector('#holidayYear')?.addEventListener('change', (event) => {
+    const year = Number(event.target.value);
+    if (!Number.isInteger(year) || year < MIN_YEAR || year > MAX_YEAR) return;
+    state.holidayYear = year;
+    render();
+    app.querySelector('#holidayYear')?.focus({ preventScroll: true });
+  });
   app.querySelectorAll('[data-holiday-year]').forEach((button) => {
     button.addEventListener('click', () => {
       const direction = button.dataset.holidayYear;

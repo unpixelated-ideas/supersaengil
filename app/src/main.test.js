@@ -210,7 +210,7 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 11월 11일");
+    expect(document.body.textContent).toContain("최종 업데이트: 2026년 11월 14일");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
@@ -222,7 +222,7 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: November 11, 2026");
+    expect(document.body.textContent).toContain("Last updated: November 14, 2026");
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("August 26, 2026");
     expect(document.body.textContent).toContain("Optimized the interface for phones and tablets, making Super Saengil more accessible across different screen sizes.");
@@ -847,16 +847,54 @@ describe('Lunar Holidays page', () => {
     expect(document.querySelectorAll('.holiday-item')).toHaveLength(20);
     const year = new Date().getFullYear();
     document.querySelector('[data-holiday-year="1"]').click();
-    expect(document.querySelector('#holidayYear').textContent).toBe(String(year + 1));
+    expect(document.querySelector('#holidayYear').value).toBe(String(year + 1));
     expect(document.activeElement.dataset.holidayYear).toBe('1');
+    const selectedDesignation = document.querySelector('.holiday-year-designation').textContent;
+    const selectedEmoji = document.querySelector('.holiday-animal-emoji').textContent;
     document.querySelector('[data-lang="ko"]').click();
     expect(location.pathname).toBe('/holidays/');
-    expect(document.querySelector('#holidayYear').textContent).toBe(`${year + 1}년`);
+    expect(document.querySelector('#holidayYear').selectedOptions[0].textContent).toBe(`${year + 1}년`);
+    expect(document.querySelector('.holiday-year-designation').textContent).toBe(selectedDesignation);
+    expect(document.querySelector('.holiday-animal-emoji').textContent).toBe(selectedEmoji);
+    expect([...document.querySelectorAll('.holiday-year-indicator dt')].map(e => e.textContent)).toEqual(['띠', '색상']);
     expect(document.querySelectorAll('.holiday-table thead th')).toHaveLength(6);
     expect(document.querySelector('.holiday-table').textContent).not.toContain('Lunar New Year');
     document.querySelector('[data-holiday-year="-1"]').click();
-    expect(document.querySelector('#holidayYear').textContent).toBe(`${year}년`);
+    expect(document.querySelector('#holidayYear').value).toBe(String(year));
+    expect(document.querySelector('.holiday-year-designation').textContent).not.toBe(selectedDesignation);
     expect([...document.querySelectorAll('.site-footer a')].slice(0, 3).map((a) => new URL(a.href).pathname)).toEqual(['/history/', '/holidays/', '/privacy/']);
     expect(document.title).toContain('음력 명절');
+  });
+});
+
+describe('Direct holiday year selection', () => {
+  it('updates holidays and zodiac together, preserves language state, and supports range endpoints', async () => {
+    installDom('http://localhost/en/holidays/');
+    await loadApp();
+    const selectYear = (year) => {
+      const select = document.querySelector('#holidayYear');
+      select.value = String(year);
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    const year = document.querySelector('#holidayYear');
+    expect(year.tagName).toBe('SELECT');
+    expect(year.options[0].value).toBe('1000');
+    expect(year.options[year.options.length - 1].value).toBe('2127');
+    selectYear(2024);
+    expect(document.activeElement.id).toBe('holidayYear');
+    expect(document.querySelector('.holiday-year-designation').textContent).toBe('갑진년 · 甲辰年');
+    expect(document.querySelector('.holiday-animal-emoji').textContent).toBe('🐉');
+    expect(document.querySelector('.holiday-table').textContent).toContain('February 10, 2024');
+    document.querySelector('[data-holiday-year="1"]').click();
+    expect(document.querySelector('#holidayYear').value).toBe('2025');
+    document.querySelector('[data-lang="ko"]').click();
+    expect(document.querySelector('#holidayYear').selectedOptions[0].textContent).toBe('2025년');
+    expect(document.querySelector('.holiday-year-designation').textContent).toBe('을사년 · 乙巳年');
+    selectYear(1000);
+    expect(document.querySelector('[data-holiday-year="-1"]').disabled).toBe(true);
+    expect(document.querySelector('[data-holiday-year="1"]').disabled).toBe(false);
+    selectYear(2127);
+    expect(document.querySelector('[data-holiday-year="1"]').disabled).toBe(true);
+    expect(document.querySelector('[data-holiday-year="-1"]').disabled).toBe(false);
   });
 });
