@@ -125,6 +125,7 @@ function officialAppSubtitle() {
 
 function render() {
   const previousMotion = captureMotion(app);
+  const previousTab = app.querySelector('.tab[aria-selected="true"]')?.id;
   state.lang = parseRoute(location.pathname).lang;
   syncMetadata(parseRoute(location.pathname));
   const isReverse = state.reverseUnlocked && state.searchMode === "reverse";
@@ -147,15 +148,17 @@ function render() {
           <button type="button" class="reset-button" data-reset-search aria-label="${escapeAttr(t("reset"))}" title="${escapeAttr(t("reset"))}">
             ${icon("reset")}<span>${t("reset")}</span>
           </button>
-          <div class="control-stack appearance-stack">
-            <span>${t("languageLabel")}</span>
-            <div class="segmented language-toggle" role="group" aria-label="${t("languageLabel")}">
-              ${languageButton("ko", "한국어")}
-              ${languageButton("en", "English")}
-            </div>
+          <div class="control-stack">
+            <details class="language-picker">
+              <summary>
+                ${t("languageLabel")} ${icon("chevronDown")}
+              </summary>
+              <div class="language-options" role="group" aria-label="${t("languageLabel")}">
+                ${languageOptions().map(([value, label]) => languageButton(value, label)).join("")}
+              </div>
+            </details>
             <select class="setting-select mobile-setting-select" data-lang-select aria-label="${t("languageLabel")}">
-              <option value="ko" ${state.lang === "ko" ? "selected" : ""}>한국어</option>
-              <option value="en" ${state.lang === "en" ? "selected" : ""}>English</option>
+              ${languageOptions().map(([value, label]) => `<option value="${value}" ${state.lang === value ? "selected" : ""}>${label}</option>`).join("")}
             </select>
           </div>
           <div class="control-stack">
@@ -171,8 +174,8 @@ function render() {
               <option value="light" ${state.theme === "light" ? "selected" : ""}>${t("light")}</option>
               <option value="dark" ${state.theme === "dark" ? "selected" : ""}>${t("dark")}</option>
             </select>
-            ${birthdayTermControl()}
           </div>
+          ${birthdayTermControl()}
         </div>
       </header>
 
@@ -182,14 +185,21 @@ function render() {
     </div>
   `;
   bindEvents();
+  const selectedTab = app.querySelector('.tab[aria-selected="true"]');
+  if (previousTab && selectedTab && selectedTab.id !== previousTab) {
+    selectedTab.closest(".tabs").classList.add("tabs-changing");
+  }
   finishMotion(app, previousMotion);
 }
 
 function homePageTemplate(isReverse) {
   return `
     <main>
-      <section class="input-card" aria-labelledby="birthdayFormTitle">
-        ${isReverse ? reverseFormTemplate() : normalFormTemplate()}
+      <section class="birthday-entry" aria-labelledby="birthdayFormTitle">
+        ${birthdayTabsTemplate(isReverse)}
+        <div class="input-card" id="birthdayEntryPanel" role="tabpanel" aria-labelledby="birthday-tab-${isReverse ? state.reverseMode : state.mode}">
+          ${isReverse ? reverseFormTemplate() : normalFormTemplate()}
+        </div>
       </section>
 
       ${infoSectionTemplate()}
@@ -202,12 +212,18 @@ function homePageTemplate(isReverse) {
   `;
 }
 
+function birthdayTabsTemplate(isReverse) {
+  const renderTab = isReverse ? reverseModeButton : tabButton;
+  return `
+    <div class="tabs${isReverse ? " reverse-tabs" : ""}" role="tablist" aria-label="${t(isReverse ? "reverseCalendarType" : "inputHelp")}">
+      ${renderTab("solar", "sun", t("solarTab"))}
+      ${renderTab("lunar", "moon", t("lunarTab"))}
+    </div>
+  `;
+}
+
 function normalFormTemplate() {
   return `
-    <div class="tabs" role="tablist" aria-label="${t("inputHelp")}">
-        ${tabButton("solar", "sun", t("solarTab"))}
-        ${tabButton("lunar", "moon", t("lunarTab"))}
-    </div>
     <div class="birthday-heading">
       <h1 id="birthdayFormTitle">${state.mode === "solar" ? t("solarTab") : t("lunarTab")}</h1>
       ${state.mode === "solar" ? `
@@ -237,10 +253,6 @@ function normalFormTemplate() {
 
 function reverseFormTemplate() {
   return `
-    <div class="tabs reverse-tabs" role="tablist" aria-label="${t("reverseCalendarType")}">
-        ${reverseModeButton("solar", "sun", t("solarTab"))}
-        ${reverseModeButton("lunar", "moon", t("lunarTab"))}
-    </div>
     <div class="reverse-heading">
       <h1 id="birthdayFormTitle">${t("reverseTitle")}</h1>
       <p>${state.reverseMode === "solar" ? t("reverseSolarDescription") : t("reverseLunarDescription")}</p>
@@ -283,9 +295,14 @@ function themeIndex() {
   return { system: 0, light: 1, dark: 2 }[state.theme] ?? 0;
 }
 
+function languageOptions() {
+  const options = [["en", "English"], ["ko", "한국어"]];
+  return state.lang === "ko" ? options.reverse() : options;
+}
+
 function languageButton(value, label) {
   return `
-    <button type="button" class="segment language-option" data-lang="${value}" aria-pressed="${state.lang === value}">
+    <button type="button" class="segment" data-lang="${value}" aria-pressed="${state.lang === value}">
       <span>${label}</span>
     </button>
   `;
@@ -309,7 +326,7 @@ function birthdayTermControl() {
 
 function tabButton(value, iconName, label) {
   return `
-    <button type="button" role="tab" class="tab" data-mode="${value}" aria-selected="${state.mode === value}" tabindex="${state.mode === value ? "0" : "-1"}">
+    <button type="button" role="tab" class="tab" id="birthday-tab-${value}" aria-controls="birthdayEntryPanel" data-mode="${value}" aria-selected="${state.mode === value}" tabindex="${state.mode === value ? "0" : "-1"}">
       ${icon(iconName)}<span>${label}</span>
     </button>
   `;
@@ -317,7 +334,7 @@ function tabButton(value, iconName, label) {
 
 function reverseModeButton(value, iconName, label) {
   return `
-    <button type="button" role="tab" class="tab" data-reverse-mode="${value}" aria-selected="${state.reverseMode === value}" tabindex="${state.reverseMode === value ? "0" : "-1"}">
+    <button type="button" role="tab" class="tab" id="birthday-tab-${value}" aria-controls="birthdayEntryPanel" data-reverse-mode="${value}" aria-selected="${state.reverseMode === value}" tabindex="${state.reverseMode === value ? "0" : "-1"}">
       ${icon(iconName)}<span>${label}</span>
     </button>
   `;
@@ -372,9 +389,9 @@ function monthTypeControl(name = "isLeapMonth", value = state.fields.isLeapMonth
 
 function infoSectionTemplate() {
   const cards = [
-    { iconName: "sunMoon", tone: "lavender", title: t("infoCard1Title"), body: t("infoCard1Body") },
-    { iconName: "calendarForward", tone: "green", title: t("infoCard2Title"), body: t("infoCard2Body") },
-    { iconName: "gift", tone: "coral", title: t("infoCard3Title"), body: t("infoCard3Body") }
+    { iconName: "search", tone: "blue", title: t("infoCard1Title"), body: t("infoCard1Body") },
+    { iconName: "calendar", tone: "green", title: t("infoCard2Title"), body: t("infoCard2Body") },
+    { iconName: "download", tone: "purple", title: t("infoCard3Title"), body: t("infoCard3Body") }
   ];
   return `
     <section class="info-section" aria-labelledby="infoTitle">
@@ -385,7 +402,7 @@ function infoSectionTemplate() {
       <div class="info-cards">
         ${cards.map((card) => `
           <article class="info-card">
-            <span class="info-icon ${card.tone}">${icon(card.iconName)}</span>
+            <span class="info-icon ${card.tone}" aria-hidden="true">${icon(card.iconName)}</span>
             <h3>${card.title}</h3>
             <p>${card.body}</p>
           </article>
@@ -888,9 +905,22 @@ function bindEvents() {
     render();
   });
 
+  const languagePicker = app.querySelector(".language-picker");
+  languagePicker?.addEventListener("focusout", (event) => {
+    if (!languagePicker.contains(event.relatedTarget)) languagePicker.open = false;
+  });
+  languagePicker?.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && languagePicker.open) {
+      languagePicker.open = false;
+      languagePicker.querySelector("summary").focus();
+    }
+  });
+
   document.querySelectorAll("[data-lang]").forEach((button) => {
     button.addEventListener("click", () => {
-      switchLanguage(button.dataset.lang);
+      languagePicker.querySelector("summary").focus();
+      languagePicker.open = false;
+      switchLanguage(button.dataset.lang, true);
     });
   });
 
@@ -921,6 +951,18 @@ function bindEvents() {
     localStorage.setItem(storageKeys.theme, state.theme);
     applyTheme();
     syncThemeControls();
+  });
+
+  app.querySelector(".tabs")?.addEventListener("keydown", (event) => {
+    if (!(event.target.matches(".tab") && ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))) return;
+    event.preventDefault();
+    const tabs = event.currentTarget.querySelectorAll(".tab");
+    const next = event.key === "Home" ? tabs[0] : event.key === "End" ? tabs[1]
+      : tabs[event.target === tabs[0] ? 1 : 0];
+    if (next !== event.target) {
+      next.focus();
+      next.click();
+    }
   });
 
   document.querySelectorAll("[data-mode]").forEach((button) => {
@@ -1289,7 +1331,7 @@ function resetSearch() {
   history.replaceState(null, "", location.pathname);
 }
 
-function switchLanguage(lang) {
+function switchLanguage(lang, focusPicker = false) {
   const route = parseRoute(location.pathname);
   if (route.lang === lang) return;
   const previousHeader = app.querySelector(".topbar");
@@ -1302,6 +1344,7 @@ function switchLanguage(lang) {
     if (path !== location.pathname) history.pushState(null, "", path + location.search + location.hash);
     localStorage.setItem(storageKeys.lang, lang);
     render();
+    if (focusPicker) app.querySelector(".language-picker summary")?.focus({ preventScroll: true });
   };
   if (document.startViewTransition && !prefersReducedMotion()) {
     languageTransition?.skipTransition();
@@ -1328,8 +1371,8 @@ function animateLanguageChange(previousHeight, previousPicker) {
   const header = app.querySelector(".topbar");
   if (!header?.animate) return;
   const main = app.querySelector("main");
-  if (main) main.style.animationDuration = "400ms";
-  const timing = { duration: 400, easing: "cubic-bezier(.4, 0, .2, 1)" };
+  if (main) main.style.animationDuration = "220ms";
+  const timing = { duration: 220, easing: "cubic-bezier(.4, 0, .2, 1)" };
   const nextHeight = header.getBoundingClientRect().height;
   // Interpolate the measured header height so the form below moves with the
   // Korean-only control. Natural heights accommodate wrapped mobile labels.
@@ -1344,7 +1387,7 @@ function animateLanguageChange(previousHeight, previousPicker) {
   } else if (previousPicker) {
     // A non-interactive outgoing copy can fade upward without retaining any
     // Korean-only controls in the English accessibility tree or tab order.
-    const stack = app.querySelector(".header-controls > .control-stack:last-child");
+    const stack = app.querySelector(".header-controls");
     if (!stack) return;
     previousPicker.classList.add("language-picker-outgoing");
     previousPicker.inert = true;
@@ -1606,12 +1649,12 @@ function applyTheme() {
     themeTransitionTimer = window.setTimeout(() => {
       root.classList.remove("theme-changing");
       app.querySelector(".theme-canvas-previous")?.remove();
-    }, 450);
+    }, 260);
   }
   root.dataset.theme = resolved;
   document.documentElement.dataset.themeMode = state.theme;
   const themeColor = getComputedStyle(document.documentElement).getPropertyValue("--theme-color").trim();
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", themeColor || (resolved === "dark" ? "#071020" : "#ffffff"));
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", themeColor || (resolved === "dark" ? "#151518" : "#fafbfe"));
 }
 
 function brandIcon() {
@@ -1622,16 +1665,14 @@ function brandIcon() {
 
 function icon(name) {
   const paths = {
-    sunMoon: '<circle cx="6.5" cy="6.5" r="2.5"/><path d="M6.5 1.5v1M1.5 6.5h1M3 3l.7.7M10 3l-.7.7M3 10l.7-.7"/><path d="M17 8a5 5 0 0 0 5 8 7 7 0 1 1-5-8z"/>',
-    calendarForward: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M7 15.5h10M14 12.5l3 3-3 3"/>',
     sparkle: '<path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/>',
+    chevronDown: '<path d="m6 9 6 6 6-6"/>',
     search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/>',
     calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
     calendarPlus: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M12 14v5M9.5 16.5h5"/>',
     calendarStar: '<rect x="3" y="5" width="16" height="16" rx="2"/><path d="M15 3v4M7 3v4M3 10h16"/><path d="M18.4 13.4l.9 1.8 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3.9-1.8z"/>',
     cake: '<path d="M7 21h10"/><path d="M6 17h12v4H6z"/><path d="M8 13h8a3 3 0 0 1 3 3v1H5v-1a3 3 0 0 1 3-3z"/><path d="M12 3v5"/><path d="M10.5 6.5L12 8l1.5-1.5"/>',
     clock: '<circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/><path d="M4 4l2.2 2.2M20 4l-2.2 2.2"/>',
-    gift: '<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M4 13h16M12 9v11"/><path d="M12 9H8.5a2.5 2.5 0 1 1 2.1-3.8L12 9z"/><path d="M12 9h3.5a2.5 2.5 0 1 0-2.1-3.8L12 9z"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     moon: '<path d="M19.7 14.9A7.6 7.6 0 0 1 9.1 4.3a8 8 0 1 0 10.6 10.6z"/>',
     monitor: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
