@@ -239,7 +239,7 @@ function normalFormTemplate() {
       <div class="field-grid ${state.mode === "lunar" ? "field-grid-lunar" : "field-grid-solar"}">
         ${numberField("year", t("birthYear"), MIN_YEAR, MAX_YEAR, t("yearPlaceholder"), state.fields.year)}
         ${numberField("month", state.mode === "solar" ? t("birthMonth") : t("lunarMonth"), 1, 12, t("monthPlaceholder"), state.fields.month)}
-        ${numberField("day", state.mode === "solar" ? t("birthDay") : t("lunarDay"), 1, 31, t("dayPlaceholder"), state.fields.day)}
+        ${numberField("day", state.mode === "solar" ? t("birthDay") : t("lunarDay"), 1, state.mode === "solar" ? 31 : 30, t("dayPlaceholder"), state.fields.day)}
         ${state.mode === "lunar" ? monthTypeControl() : ""}
         <button class="primary-button" type="submit">
           ${icon("search")}<span>${t("check")}</span>
@@ -344,7 +344,10 @@ function numberField(name, label, min, max, placeholder, value = state.fields[na
   return `
     <label class="field">
       <span>${label}</span>
-      <input id="${name}" name="${name}" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" enterkeyhint="next" data-min="${min}" data-max="${max}" placeholder="${escapeAttr(placeholder)}" value="${escapeAttr(value)}" required />
+      <span class="date-field-control">
+        <input id="${name}" name="${name}" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" enterkeyhint="next" data-min="${min}" data-max="${max}" placeholder="${escapeAttr(placeholder)}" value="${escapeAttr(value)}"${name === "year" ? "" : " required"} />
+        <span class="date-field-check" aria-hidden="true">${icon("check")}</span>
+      </span>
     </label>
   `;
 }
@@ -1077,12 +1080,15 @@ function bindEvents() {
       state.fields[name] = String(Number(values[index]));
       document.getElementById(name).value = state.fields[name];
     });
-    state.error = "";
-    document.querySelector("#formError").textContent = "";
+    submit();
   });
 
   const formElement = document.querySelector("#birthdayForm");
   if (formElement) {
+    const refreshChecks = () => updateDateFieldChecks(formElement);
+    refreshChecks();
+    formElement.addEventListener("input", refreshChecks);
+    formElement.addEventListener("change", refreshChecks);
     formElement.addEventListener("submit", (event) => {
       event.preventDefault();
       syncFieldsFromForm(event.currentTarget);
@@ -1120,6 +1126,29 @@ function bindEvents() {
   });
 }
 
+function updateDateFieldChecks(form) {
+  const { year, month, day, isLeapMonth, reverseIsLeapMonth } = form.elements;
+  const value = (field) => field.value.trim();
+  const inRange = (field) => /^\d+$/.test(value(field))
+    && Number(value(field)) >= Number(field.dataset.min)
+    && Number(value(field)) <= Number(field.dataset.max);
+
+  const validYear = inRange(year);
+  const validMonth = inRange(month);
+  let validDay = inRange(day);
+  if (validDay && validMonth && (validYear || !value(year))) {
+    const date = [Number(value(year) || new Date().getFullYear()), Number(value(month)), Number(value(day))];
+    const leapMonth = isLeapMonth ?? reverseIsLeapMonth;
+    validDay = leapMonth
+      ? Boolean(lunarToSolar(...date, leapMonth.value === "true"))
+      : isGregorianDate(...date);
+  }
+
+  year.toggleAttribute("data-valid", validYear);
+  month.toggleAttribute("data-valid", validMonth);
+  day.toggleAttribute("data-valid", validDay);
+}
+
 function syncFieldsFromForm(formElement) {
   const form = new FormData(formElement);
   if (state.reverseUnlocked && state.searchMode === "reverse") {
@@ -1144,7 +1173,7 @@ function submit() {
     submitReverse();
     return;
   }
-  const year = Number(state.fields.year);
+  const year = Number(state.fields.year || new Date().getFullYear());
   const month = Number(state.fields.month);
   const day = Number(state.fields.day);
   const isLeapMonth = state.fields.isLeapMonth === "true";
@@ -1157,6 +1186,7 @@ function submit() {
   }
   try {
     state.result = calculateMatches({ mode: state.mode, year, month, day, isLeapMonth });
+    state.fields.year ||= String(year);
     state.error = "";
     state.expanded = false;
     updateUrl(year, month, day, isLeapMonth);
@@ -1169,7 +1199,7 @@ function submit() {
 }
 
 function submitReverse() {
-  const year = Number(state.reverseFields.year);
+  const year = Number(state.reverseFields.year || new Date().getFullYear());
   const month = Number(state.reverseFields.month);
   const day = Number(state.reverseFields.day);
   const isLeapMonth = state.reverseFields.isLeapMonth === "true";
@@ -1182,6 +1212,7 @@ function submitReverse() {
   }
   try {
     state.reverseResult = calculateReverseMatches({ mode: state.reverseMode, year, month, day, isLeapMonth });
+    state.reverseFields.year ||= String(year);
     state.error = "";
     state.copyMessage = "";
     state.expanded = false;
@@ -1214,7 +1245,7 @@ function focusSearchResults() {
 }
 
 function validateInput(year, month, day, isLeapMonth) {
-  if (!state.fields.year || !state.fields.month || !state.fields.day) return "missingFields";
+  if (!state.fields.month || !state.fields.day) return "missingFields";
   if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) return "missingFields";
   if (!Number.isInteger(year) || year < MIN_YEAR || year > MAX_YEAR) return "unsupportedYear";
   if (!Number.isInteger(month) || month < 1 || month > 12) return state.mode === "solar" ? "invalidGregorian" : "invalidLunar";
@@ -1228,7 +1259,7 @@ function validateInput(year, month, day, isLeapMonth) {
 }
 
 function validateReverseInput(year, month, day, isLeapMonth) {
-  if (!state.reverseFields.year || !state.reverseFields.month || !state.reverseFields.day) return "missingFields";
+  if (!state.reverseFields.month || !state.reverseFields.day) return "missingFields";
   if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) return "missingFields";
   if (!Number.isInteger(year) || year < 1900 || year > MAX_YEAR) return "reverseUnsupportedYear";
   if (!Number.isInteger(month) || month < 1 || month > 12) return state.reverseMode === "solar" ? "invalidGregorian" : "invalidLunar";

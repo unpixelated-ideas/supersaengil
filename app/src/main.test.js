@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { translations } from "./translations.js";
 
 let dark = false;
 const listeners = new Set();
@@ -210,7 +211,7 @@ describe("Super Saengil interface", () => {
     await loadApp();
 
     expect(document.querySelector("#legalTitle").textContent).toBe("업데이트 로그");
-    expect(document.body.textContent).toContain("최종 업데이트: 2026년 11월 14일");
+    expect(document.body.textContent).toContain(translations.ko.updatesUpdated);
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("2026년 8월 26일");
     expect(document.body.textContent).toContain("v0.9");
@@ -222,7 +223,7 @@ describe("Super Saengil interface", () => {
 
     document.querySelector('[data-lang="en"]').click();
     expect(document.querySelector("#legalTitle").textContent).toBe("Update Log");
-    expect(document.body.textContent).toContain("Last updated: November 14, 2026");
+    expect(document.body.textContent).toContain(translations.en.updatesUpdated);
     expect(document.body.textContent).toContain("v0.9.1");
     expect(document.body.textContent).toContain("August 26, 2026");
     expect(document.body.textContent).toContain("Optimized the interface for phones and tablets, making Super Saengil more accessible across different screen sizes.");
@@ -265,7 +266,7 @@ describe("Super Saengil interface", () => {
     expect(document.querySelector(".site-footer a:first-child").textContent).toBe("Lunar Calendar Explained");
   });
 
-  it("picks a solar birthday without submitting and hides the picker on the lunar tab", async () => {
+  it("searches immediately after picking a solar birthday and hides the picker on the lunar tab", async () => {
     installDom("http://localhost/en/");
     await loadApp();
     const picker = document.querySelector("#solarDatePicker");
@@ -279,13 +280,48 @@ describe("Super Saengil interface", () => {
     picker.value = "2000-02-29";
     picker.dispatchEvent(new Event("change"));
     expect(["year", "month", "day"].map((id) => document.getElementById(id).value)).toEqual(["2000", "2", "29"]);
-    expect(document.querySelector("#searchResults")).toBeNull();
+    expect(document.querySelector("#searchResults")).not.toBeNull();
+    expect(new URLSearchParams(location.search).get("year")).toBe("2000");
     document.querySelector('[data-lang="ko"]').click();
     expect(document.querySelector(".calendar-picker-button").getAttribute("aria-label")).toBe("달력에서 양력 생일 선택");
     expect(document.querySelector("#day").value).toBe("29");
     document.querySelector('[data-mode="lunar"]').click();
     expect(document.querySelector(".calendar-picker-button")).toBeNull();
     expect(document.querySelector("#solarDatePicker")).toBeNull();
+  });
+
+  it.each(["solar", "lunar"])("uses the current year for a %s search with just a month and day", async (mode) => {
+    installDom("http://localhost/en/");
+    await loadApp();
+    document.querySelector(`[data-mode="${mode}"]`).click();
+    document.querySelector("#month").value = "1";
+    document.querySelector("#day").value = "1";
+    document.querySelector("#birthdayForm button[type=submit]").click();
+    const currentYear = String(new Date().getFullYear());
+    expect(document.querySelector("#searchResults")).not.toBeNull();
+    expect(document.querySelector("#year").value).toBe(currentYear);
+    expect(new URLSearchParams(location.search).get("year")).toBe(currentYear);
+  });
+
+  it("updates green check marks as fields change and rechecks the day against the year", async () => {
+    await loadApp();
+    const enter = (name, value) => {
+      const input = document.getElementById(name);
+      input.value = value;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    };
+    const valid = (name) => document.getElementById(name).hasAttribute("data-valid");
+    expect(valid("year")).toBe(false);
+    enter("year", "2024");
+    enter("month", "2");
+    enter("day", "29");
+    expect(["year", "month", "day"].map(valid)).toEqual([true, true, true]);
+    enter("year", "2025");
+    expect(valid("day")).toBe(false);
+    enter("month", "13");
+    expect(valid("month")).toBe(false);
+    enter("year", "900");
+    expect(valid("year")).toBe(false);
   });
 
   it("offers a visible date field when showPicker is unavailable", async () => {

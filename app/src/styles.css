@@ -582,6 +582,27 @@ h1 {
   color: var(--muted);
 }
 
+.date-field-control {
+  position: relative;
+  display: block;
+}
+
+.field .date-field-control input { padding-inline-end: 30px; }
+
+.date-field-check {
+  position: absolute;
+  inset-inline-end: 9px;
+  top: 50%;
+  display: none;
+  transform: translateY(-50%);
+  color: #17764a;
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .date-field-check { color: #68cf98; }
+.date-field-check svg { display: block; width: 16px; height: 16px; }
+.date-field-control input[data-valid] + .date-field-check { display: block; }
+
 .month-type {
   min-height: 76px;
   min-width: 0;

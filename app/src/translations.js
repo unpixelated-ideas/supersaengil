@@ -53,7 +53,7 @@ export const translations = {
     footerNote: "음력 계산은 2050년까지 KARI/KASI 기준 데이터를, 이후는 한국 표준시 기준 천문 음력 규칙을 사용합니다.",
     recurrenceNoteRegular: "반복 규칙: 같은 음력 월일의 평달만 계산합니다.",
     recurrenceNoteLeap: "반복 규칙: 같은 음력 월일의 윤달만 계산합니다. 해당 연도에 그 윤달이 없으면 해당 없음으로 표시합니다.",
-    missingFields: "모든 값을 입력해 주세요.",
+    missingFields: "월과 일을 입력해 주세요.",
     invalidGregorian: "존재하지 않는 양력 날짜입니다.",
     invalidLunar: "존재하지 않는 음력 날짜입니다.",
     invalidDay: "선택한 월에 없는 날짜입니다.",
@@ -169,7 +169,7 @@ export const translations = {
     updatesLink: "업데이트 로그",
     feedbackLink: "피드백",
     updatesTitle: "업데이트 로그",
-    updatesUpdated: "최종 업데이트: 2026년 11월 14일",
+    updatesUpdated: "최종 업데이트: 2026년 11월 26일",
     updatesIntro: "슈퍼생일의 주요 변경 사항과 개선 내역입니다.",
     historyTitle: "역사",
     historyDescription: "한국의 전통 음력의 역사와 음력의 원리를 알아보세요.",
@@ -214,6 +214,15 @@ export const translations = {
       }
     ],
     updatesEntries: [
+      {
+        version: "v0.9.6",
+        date: "2026년 11월 26일",
+        dateIso: "2026-11-26",
+        items: [
+          "슈퍼생일을 더 쉽고 직관적으로 사용할 수 있도록 사용자 인터페이스를 전반적으로 개편했습니다.",
+          "더 쉽고 효율적으로 검색할 수 있도록 검색 경험을 개선했습니다."
+        ]
+      },
       {
         version: "v0.9.5",
         date: "2026년 11월 14일",
@@ -474,7 +483,7 @@ export const translations = {
     footerNote: "Lunar-date calculations use KARI/KASI-standard data through 2050 and Korean Standard Time astronomical lunar-calendar rules afterward.",
     recurrenceNoteRegular: "Recurrence rule: only the same regular lunar month and day are counted.",
     recurrenceNoteLeap: "Recurrence rule: only the same leap lunar month and day are counted. Years without that leap month are shown as not existing.",
-    missingFields: "Please enter every value.",
+    missingFields: "Please enter a month and day.",
     invalidGregorian: "That Gregorian date does not exist.",
     invalidLunar: "That lunar date does not exist.",
     invalidDay: "That day is outside the selected month.",
@@ -590,7 +599,7 @@ export const translations = {
     updatesLink: "Update Log",
     feedbackLink: "Feedback",
     updatesTitle: "Update Log",
-    updatesUpdated: "Last updated: November 14, 2026",
+    updatesUpdated: "Last updated: November 26, 2026",
     updatesIntro: "A running record of major Super Saengil changes and improvements.",
     historyTitle: "History",
     historyDescription: "Explore the history of Korea’s traditional lunar calendar and how the lunar calendar works.",
@@ -635,6 +644,15 @@ export const translations = {
       }
     ],
     updatesEntries: [
+      {
+        version: "v0.9.6",
+        date: "November 26, 2026",
+        dateIso: "2026-11-26",
+        items: [
+          "Overhauled the user interface to make Super Saengil easier and more intuitive to use.",
+          "Refined the search experience to make searches easier and more efficient."
+        ]
+      },
       {
         version: "v0.9.5",
         date: "November 14, 2026",
